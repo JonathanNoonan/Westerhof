@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Westerhof 2023 Analysis</title>
+
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.2.1/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.2.1/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Multifunctional cytokine production marks influenza A virus-specific CD4 T cells with high expression of survival molecules</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="Citation.html">Citation</a>
+</li>
+<li>
+  <a href="01_.html">Analysis</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/JonathanNoonan/Westerhof">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Westerhof 2023 Analysis</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2023-08-08
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Westerhof/analysis/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20221221code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20221221)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20221221code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20221221)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongd197aab">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> d197aab
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongd197aab"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version d197aab.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  analysis/01-Functions.R
+    Untracked:  data/TCR data/
+    Untracked:  data/individual datasets for each sample/
+    Untracked:  data/overall data/
+    Untracked:  output/01_/
+
+Unstaged changes:
+    Modified:   _workflowr.yml
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/license.Rmd
+    Deleted:    data/README.md
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>suppressPackageStartupMessages(c(
+library(Seurat),
+library(dplyr),
+library(ggplot2),
+library(scRepertoire),
+library(cowplot),
+library(circlize),
+library(ComplexHeatmap),
+library(plot1cell),
+library(ArchR),
+library(ggvenn)))</code></pre>
+<pre><code>  [1] &quot;SeuratObject&quot;         &quot;Seurat&quot;               &quot;stats&quot;               
+  [4] &quot;graphics&quot;             &quot;grDevices&quot;            &quot;utils&quot;               
+  [7] &quot;datasets&quot;             &quot;workflowr&quot;            &quot;methods&quot;             
+ [10] &quot;base&quot;                 &quot;dplyr&quot;                &quot;SeuratObject&quot;        
+ [13] &quot;Seurat&quot;               &quot;stats&quot;                &quot;graphics&quot;            
+ [16] &quot;grDevices&quot;            &quot;utils&quot;                &quot;datasets&quot;            
+ [19] &quot;workflowr&quot;            &quot;methods&quot;              &quot;base&quot;                
+ [22] &quot;ggplot2&quot;              &quot;dplyr&quot;                &quot;SeuratObject&quot;        
+ [25] &quot;Seurat&quot;               &quot;stats&quot;                &quot;graphics&quot;            
+ [28] &quot;grDevices&quot;            &quot;utils&quot;                &quot;datasets&quot;            
+ [31] &quot;workflowr&quot;            &quot;methods&quot;              &quot;base&quot;                
+ [34] &quot;scRepertoire&quot;         &quot;ggplot2&quot;              &quot;dplyr&quot;               
+ [37] &quot;SeuratObject&quot;         &quot;Seurat&quot;               &quot;stats&quot;               
+ [40] &quot;graphics&quot;             &quot;grDevices&quot;            &quot;utils&quot;               
+ [43] &quot;datasets&quot;             &quot;workflowr&quot;            &quot;methods&quot;             
+ [46] &quot;base&quot;                 &quot;cowplot&quot;              &quot;scRepertoire&quot;        
+ [49] &quot;ggplot2&quot;              &quot;dplyr&quot;                &quot;SeuratObject&quot;        
+ [52] &quot;Seurat&quot;               &quot;stats&quot;                &quot;graphics&quot;            
+ [55] &quot;grDevices&quot;            &quot;utils&quot;                &quot;datasets&quot;            
+ [58] &quot;workflowr&quot;            &quot;methods&quot;              &quot;base&quot;                
+ [61] &quot;circlize&quot;             &quot;cowplot&quot;              &quot;scRepertoire&quot;        
+ [64] &quot;ggplot2&quot;              &quot;dplyr&quot;                &quot;SeuratObject&quot;        
+ [67] &quot;Seurat&quot;               &quot;stats&quot;                &quot;graphics&quot;            
+ [70] &quot;grDevices&quot;            &quot;utils&quot;                &quot;datasets&quot;            
+ [73] &quot;workflowr&quot;            &quot;methods&quot;              &quot;base&quot;                
+ [76] &quot;ComplexHeatmap&quot;       &quot;grid&quot;                 &quot;circlize&quot;            
+ [79] &quot;cowplot&quot;              &quot;scRepertoire&quot;         &quot;ggplot2&quot;             
+ [82] &quot;dplyr&quot;                &quot;SeuratObject&quot;         &quot;Seurat&quot;              
+ [85] &quot;stats&quot;                &quot;graphics&quot;             &quot;grDevices&quot;           
+ [88] &quot;utils&quot;                &quot;datasets&quot;             &quot;workflowr&quot;           
+ [91] &quot;methods&quot;              &quot;base&quot;                 &quot;plot1cell&quot;           
+ [94] &quot;wordcloud&quot;            &quot;simplifyEnrichment&quot;   &quot;GEOquery&quot;            
+ [97] &quot;rlang&quot;                &quot;EnsDb.Hsapiens.v86&quot;   &quot;ensembldb&quot;           
+[100] &quot;AnnotationFilter&quot;     &quot;GenomicFeatures&quot;      &quot;AnnotationDbi&quot;       
+[103] &quot;Biobase&quot;              &quot;GenomicRanges&quot;        &quot;GenomeInfoDb&quot;        
+[106] &quot;IRanges&quot;              &quot;S4Vectors&quot;            &quot;stats4&quot;              
+[109] &quot;BiocGenerics&quot;         &quot;loomR&quot;                &quot;itertools&quot;           
+[112] &quot;iterators&quot;            &quot;R6&quot;                   &quot;hdf5r&quot;               
+[115] &quot;Matrix&quot;               &quot;data.table&quot;           &quot;DoubletFinder&quot;       
+[118] &quot;matrixStats&quot;          &quot;ComplexUpset&quot;         &quot;purrr&quot;               
+[121] &quot;ggbeeswarm&quot;           &quot;reshape2&quot;             &quot;biomaRt&quot;             
+[124] &quot;RColorBrewer&quot;         &quot;progress&quot;             &quot;scales&quot;              
+[127] &quot;MASS&quot;                 &quot;ggh4x&quot;                &quot;plotly&quot;              
+[130] &quot;ComplexHeatmap&quot;       &quot;grid&quot;                 &quot;circlize&quot;            
+[133] &quot;cowplot&quot;              &quot;scRepertoire&quot;         &quot;ggplot2&quot;             
+[136] &quot;dplyr&quot;                &quot;SeuratObject&quot;         &quot;Seurat&quot;              
+[139] &quot;stats&quot;                &quot;graphics&quot;             &quot;grDevices&quot;           
+[142] &quot;utils&quot;                &quot;datasets&quot;             &quot;workflowr&quot;           
+[145] &quot;methods&quot;              &quot;base&quot;                 &quot;ArchR&quot;               
+[148] &quot;magrittr&quot;             &quot;rhdf5&quot;                &quot;SummarizedExperiment&quot;
+[151] &quot;MatrixGenerics&quot;       &quot;plot1cell&quot;            &quot;wordcloud&quot;           
+[154] &quot;simplifyEnrichment&quot;   &quot;GEOquery&quot;             &quot;rlang&quot;               
+[157] &quot;EnsDb.Hsapiens.v86&quot;   &quot;ensembldb&quot;            &quot;AnnotationFilter&quot;    
+[160] &quot;GenomicFeatures&quot;      &quot;AnnotationDbi&quot;        &quot;Biobase&quot;             
+[163] &quot;GenomicRanges&quot;        &quot;GenomeInfoDb&quot;         &quot;IRanges&quot;             
+[166] &quot;S4Vectors&quot;            &quot;stats4&quot;               &quot;BiocGenerics&quot;        
+[169] &quot;loomR&quot;                &quot;itertools&quot;            &quot;iterators&quot;           
+[172] &quot;R6&quot;                   &quot;hdf5r&quot;                &quot;Matrix&quot;              
+[175] &quot;data.table&quot;           &quot;DoubletFinder&quot;        &quot;matrixStats&quot;         
+[178] &quot;ComplexUpset&quot;         &quot;purrr&quot;                &quot;ggbeeswarm&quot;          
+[181] &quot;reshape2&quot;             &quot;biomaRt&quot;              &quot;RColorBrewer&quot;        
+[184] &quot;progress&quot;             &quot;scales&quot;               &quot;MASS&quot;                
+[187] &quot;ggh4x&quot;                &quot;plotly&quot;               &quot;ComplexHeatmap&quot;      
+[190] &quot;grid&quot;                 &quot;circlize&quot;             &quot;cowplot&quot;             
+[193] &quot;scRepertoire&quot;         &quot;ggplot2&quot;              &quot;dplyr&quot;               
+[196] &quot;SeuratObject&quot;         &quot;Seurat&quot;               &quot;stats&quot;               
+[199] &quot;graphics&quot;             &quot;grDevices&quot;            &quot;utils&quot;               
+[202] &quot;datasets&quot;             &quot;workflowr&quot;            &quot;methods&quot;             
+[205] &quot;base&quot;                 &quot;ggvenn&quot;               &quot;ArchR&quot;               
+[208] &quot;magrittr&quot;             &quot;rhdf5&quot;                &quot;SummarizedExperiment&quot;
+[211] &quot;MatrixGenerics&quot;       &quot;plot1cell&quot;            &quot;wordcloud&quot;           
+[214] &quot;simplifyEnrichment&quot;   &quot;GEOquery&quot;             &quot;rlang&quot;               
+[217] &quot;EnsDb.Hsapiens.v86&quot;   &quot;ensembldb&quot;            &quot;AnnotationFilter&quot;    
+[220] &quot;GenomicFeatures&quot;      &quot;AnnotationDbi&quot;        &quot;Biobase&quot;             
+[223] &quot;GenomicRanges&quot;        &quot;GenomeInfoDb&quot;         &quot;IRanges&quot;             
+[226] &quot;S4Vectors&quot;            &quot;stats4&quot;               &quot;BiocGenerics&quot;        
+[229] &quot;loomR&quot;                &quot;itertools&quot;            &quot;iterators&quot;           
+[232] &quot;R6&quot;                   &quot;hdf5r&quot;                &quot;Matrix&quot;              
+[235] &quot;data.table&quot;           &quot;DoubletFinder&quot;        &quot;matrixStats&quot;         
+[238] &quot;ComplexUpset&quot;         &quot;purrr&quot;                &quot;ggbeeswarm&quot;          
+[241] &quot;reshape2&quot;             &quot;biomaRt&quot;              &quot;RColorBrewer&quot;        
+[244] &quot;progress&quot;             &quot;scales&quot;               &quot;MASS&quot;                
+[247] &quot;ggh4x&quot;                &quot;plotly&quot;               &quot;ComplexHeatmap&quot;      
+[250] &quot;grid&quot;                 &quot;circlize&quot;             &quot;cowplot&quot;             
+[253] &quot;scRepertoire&quot;         &quot;ggplot2&quot;              &quot;dplyr&quot;               
+[256] &quot;SeuratObject&quot;         &quot;Seurat&quot;               &quot;stats&quot;               
+[259] &quot;graphics&quot;             &quot;grDevices&quot;            &quot;utils&quot;               
+[262] &quot;datasets&quot;             &quot;workflowr&quot;            &quot;methods&quot;             
+[265] &quot;base&quot;                </code></pre>
+<div id="load-functions" class="section level2">
+<h2>Load Functions</h2>
+<pre class="r"><code>source(&quot;01-Functions.R&quot;)</code></pre>
+<pre class="r"><code>## Load Data and clean
+
+counts &lt;- read.table(&quot;../data/overall data/_1_Combined_TRACE-TCR-full_DBEC_MolsPerCell.csv&quot;, skip = 7, sep = &quot;,&quot;, header = TRUE, row.names = 1)
+
+colnames(counts) &lt;- gsub(&quot;_.*&quot;, &quot;&quot;, colnames(counts)) 
+
+Tc &lt;- CreateSeuratObject(counts = t(counts))
+
+Tags &lt;- read.table(&quot;../data/individual datasets for each sample/_1_TRACE-TCR-full_Sample_Tag_Calls.csv&quot;, skip = 7, sep = &quot;,&quot;, header = TRUE, row.names = 1)
+
+Tc$ID &lt;- Tags$Sample_Name</code></pre>
+</div>
+<div id="setup-qc" class="section level1 tabset tabset-pills">
+<h1 class="tabset tabset-pills">Setup &amp; QC</h1>
+<pre class="r"><code>## Remove multiplets and undetermined cells as defined by the BD pipeline
+Idents(Tc) &lt;- &quot;ID&quot;
+Tc &lt;- subset(Tc, ident = &quot;Multiplet&quot;, invert = T)
+Tc &lt;- subset(Tc, ident = &quot;Undetermined&quot;, invert = T)
+
+## Remove cells with low/high genes or low reads. 
+Tc &lt;- subset(Tc, subset = nFeature_RNA &gt; 50 &amp; nFeature_RNA &lt; 120 &amp; nCount_RNA &lt;1200)
+
+### Reorder Tissue IDs
+ID_Levels &lt;- c(&quot;Spleen1&quot;, &quot;Spleen2&quot;, &quot;Spleen3&quot;, &quot;Spleen4&quot;, &quot;Lung1&quot;, &quot;Lung2&quot;, &quot;Lung3&quot;, &quot;Lung4&quot;)
+Tc$ID &lt;- factor(x = Tc@meta.data[[&quot;ID&quot;]], levels = ID_Levels)
+Idents(Tc) &lt;- &quot;ID&quot;
+
+# Generalised
+Tc$Tissue &lt;- Tc$ID
+Idents(Tc) &lt;- &quot;Tissue&quot;
+Tc &lt;- RenameIdents(Tc,&quot;Spleen1&quot; = &quot;Spleen&quot;, &quot;Spleen2&quot; = &quot;Spleen&quot;, &quot;Spleen3&quot; = &quot;Spleen&quot;, &quot;Spleen4&quot; = &quot;Spleen&quot;, &quot;Lung1&quot; = &quot;Lung&quot;, &quot;Lung2&quot; = &quot;Lung&quot;, &quot;Lung3&quot; = &quot;Lung&quot;, &quot;Lung4&quot; = &quot;Lung&quot;)
+Tc$Tissue &lt;- Idents(Tc)
+
+Tc$Mouse &lt;- Tc$ID
+Idents(Tc) &lt;- &quot;Mouse&quot;
+Tc &lt;- RenameIdents(Tc, &quot;Spleen1&quot; = &quot;M1&quot;, &quot;Lung1&quot; = &quot;M1&quot;, &quot;Spleen2&quot; = &quot;M2&quot;, &quot;Lung2&quot; = &quot;M2&quot;,&quot;Spleen3&quot; = &quot;M3&quot;, &quot;Lung3&quot; = &quot;M3&quot;,&quot;Spleen4&quot; = &quot;M4&quot;, &quot;Lung4&quot; = &quot;M4&quot;)
+Tc$Mouse &lt;- Idents(Tc)</code></pre>
+<div id="rna-normalisation" class="section level2">
+<h2>RNA Normalisation</h2>
+<pre class="r"><code>## Scale and Normalise RNA assay
+DefaultAssay(Tc) &lt;- &quot;RNA&quot;
+Tc &lt;- NormalizeData(Tc)
+all.genes &lt;- rownames(Tc)
+Tc &lt;- ScaleData(Tc, features = all.genes)</code></pre>
+</div>
+<div id="sct-normalisation-and-initial-clustering-supp-7a"
+class="section level2">
+<h2>SCT Normalisation and Initial Clustering (Supp 7A)</h2>
+<pre class="r"><code>## Perform ScTransform
+Tc &lt;- SCTransform(Tc, verbose = FALSE, return.only.var.genes = FALSE)
+
+## Run PCA
+Tc &lt;- RunPCA(Tc, verbose = FALSE)
+
+## Run UMAP
+Tc &lt;- RunUMAP(Tc, dims = 1:30, verbose = FALSE)
+
+## Find Nearest Neighbours
+Tc &lt;- FindNeighbors(Tc, dims = 1:30, verbose = FALSE)
+
+## Find CLusters
+Tc &lt;- FindClusters(Tc, resolution = 1.2, verbose = FALSE)</code></pre>
+<pre class="r"><code>## Plot
+Supp7_A &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, label = T, pt.size = 0.5) + theme( axis.line = element_line(colour = &#39;black&#39;, size = 2.5), axis.ticks = element_line(size = 5), axis.ticks.length = unit(0.5, &quot;cm&quot;), axis.text = element_text(size = 25), axis.title.x = element_blank(), axis.title.y = element_blank())  + NoLegend()</code></pre>
+<pre class="r"><code>## Initial Annotation
+Idents(Tc) &lt;- &quot;seurat_clusters&quot;
+CD4ID &lt;- c(&quot;Naïve&quot;,
+&quot;Tem 1&quot;,
+&quot;Naïve&quot;,
+&quot;Naïve&quot;,
+&quot;Naïve&quot;,
+&quot;Naïve&quot;,
+&quot;Single +&quot;,
+&quot;Double +&quot;,
+&quot;Tem 2&quot;,
+&quot;Cytotoxic&quot;,
+&quot;Tem 3&quot;,
+&quot;Naïve&quot;,
+&quot;Tem 4&quot;,
+&quot;Tem 5&quot;,
+&quot;Triple +&quot; ,
+&quot;Eomes_hi&quot;,
+&quot;Tregs&quot;,
+&quot;Naïve&quot;,
+&quot;Naïve&quot;)
+names(x = CD4ID) &lt;- levels(x = Tc)
+Tc &lt;- RenameIdents(object = Tc, CD4ID)
+Tc[[&quot;CD4ID&quot;]] &lt;- Idents(object = Tc)</code></pre>
+<pre class="r"><code># Reordered Annotation
+Idents(Tc) &lt;- &quot;CD4ID&quot;
+simp_Levels &lt;- c(
+&quot;Naïve&quot;,
+&quot;Tregs&quot;,
+&quot;Tem 1&quot;,
+&quot;Tem 2&quot;,
+&quot;Tem 3&quot;,
+&quot;Tem 4&quot;,
+&quot;Tem 5&quot;,
+&quot;Eomes_hi&quot;,
+&quot;Cytotoxic&quot;,
+&quot;Single +&quot;,
+&quot;Double +&quot;,
+&quot;Triple +&quot;)
+
+Tc$CD4ID &lt;- factor(x = Tc@meta.data[[&quot;CD4ID&quot;]], levels = simp_Levels)
+
+# Create vector of default colors
+ArchR &lt;- ArchRPalettes[1:15]
+my_color_palette &lt;- ArchR$bear[c(1,2,3,4,9,10,11,12,14,5,13,15)]
+names(my_color_palette) &lt;- as.character(simp_Levels)
+
+# Assign Mouse and Tissue cols
+mouse_cols &lt;- brewer.pal(n = length(names(table(Tc$Mouse))), name = &quot;Blues&quot;)
+names(mouse_cols) &lt;- names(table(Tc$Mouse))
+
+Tissue_cols &lt;- c(&quot;#FF2600&quot;, &quot;#424242&quot;)
+names(Tissue_cols) &lt;- c(&quot;Spleen&quot;, &quot;Lung&quot;)</code></pre>
+</div>
+</div>
+<div id="fig-4" class="section level1 tabset tabset-pills">
+<h1 class="tabset tabset-pills">Fig 4</h1>
+<div id="figure-4a" class="section level2">
+<h2>Figure 4A</h2>
+<pre class="r"><code>Idents(Tc) &lt;- &quot;CD4ID&quot;
+
+circ_data &lt;- prepare_circlize_data(Tc, scale = 0.65)
+set.seed(1234)
+
+## Levels
+circ_data$Cluster &lt;- factor(circ_data$Cluster, levels = levels(Tc))
+Clusters &lt;- my_color_palette[levels(Tc)]</code></pre>
+<pre class="r"><code>## plot and save figure
+
+dir.create(&quot;../output/01_&quot;)
+
+png(filename =  &#39;../output/01_/Fig4A_UMAP.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+circos.clear()
+circos.par(circle.margin = 0.1)
+plot_circlize2(circ_data, do.label = F, pt.size = 1, col.use = Clusters, bg.color = &#39;white&#39;, kde2d.n = 10, repel = T, label.cex = 50, contour.levels = 0) 
+add_track2(circ_data, group = &quot;Tissue&quot;, colors = Tissue_cols , track_num = 2)
+add_track2(circ_data, group = &quot;Mouse&quot;, colors = mouse_cols, track_num = 3) 
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig4A_UMAP.png" /></p>
+</div>
+<div id="legends" class="section level2">
+<h2>Legends</h2>
+<pre class="r"><code>dir.create(&#39;../output/01_/Legends&#39;)
+
+png(filename =  &#39;../output/01_/Legends/Cluster_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
+legend(&quot;topleft&quot;, legend = names(my_color_palette), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
+    col = my_color_palette)
+mtext(&quot;Cluster&quot;, at=0.2, cex=2)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Legends/Cluster_Legend.png" /></p>
+<pre class="r"><code>png(filename =  &#39;../output/01_/Legends/Mouse_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
+legend(&quot;topleft&quot;, legend = names(mouse_cols), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
+    col = mouse_cols)
+mtext(&quot;Mouse&quot;, at=0.2, cex=2)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Legends/Mouse_Legend.png" /></p>
+<pre class="r"><code>png(filename =  &#39;../output/01_/Legends/Tissue_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
+legend(&quot;topleft&quot;, legend = names(Tissue_cols), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
+    col = Tissue_cols)
+mtext(&quot;Tissue&quot;, at=0.2, cex=2)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Legends/Tissue_Legend.png" /></p>
+</div>
+<div id="fig-4b-cytokine-heatmap" class="section level2">
+<h2>Fig 4B Cytokine+ Heatmap</h2>
+<pre class="r"><code>## Conduct differential expression testing
+DefaultAssay(Tc) &lt;- &quot;RNA&quot;
+celltypeDEG &lt;- FindAllMarkers(Tc, test.use = &quot;MAST&quot;, assay = &quot;RNA&quot;, logfc.threshold = 0.25, min.pct = 0.4, only.pos = T)
+
+## remove non-significant DEGs
+celltypeDEG &lt;- subset(celltypeDEG, p_val_adj &lt;0.05)
+
+## save as table
+write.csv(celltypeDEG, file = &quot;../output/01_/celltypeDEG.csv&quot;)
+
+## remove genes as rownames
+rownames(celltypeDEG) &lt;- NULL
+
+## remove duplicates for heatmap visualisation
+no.dup &lt;- celltypeDEG %&gt;% group_by(gene) %&gt;%
+        top_n(1, abs(avg_log2FC))</code></pre>
+<pre class="r"><code>## Create averaged expression per mouse object 
+Idents(Tc) &lt;- &quot;CD4ID&quot;
+Cyto_pos_avg &lt;- AverageExpression(Tc, assays = &quot;RNA&quot;, slot = &quot;scale.data&quot;, return.seurat = T, add.ident = &quot;Mouse&quot;)
+
+Idents(Cyto_pos_avg) &lt;- &quot;orig.ident&quot;
+
+## subset to include cells only from cytokine producing clusters
+Cyto_pos_avg &lt;- subset(Cyto_pos_avg, idents = c(&quot;Single +&quot;, &quot;Double +&quot;,
+&quot;Triple +&quot; ))
+
+## subset cluster DEGs to include cells only from cytokine producing clusters
+Cyto_pos_markers &lt;- celltypeDEG[289:436, ]
+
+
+## Identify unique and common markers from each group.
+x &lt;- split(Cyto_pos_markers, Cyto_pos_markers$cluster)
+
+
+intersect_all &lt;- function(a,b,...){
+  Reduce(dplyr::intersect, list(a,b,...))
+}
+
+
+a &lt;- x$`Single +`$gene
+b &lt;- x$`Double +`$gene
+c &lt;- x$`Triple +`$gene
+
+all &lt;- intersect_all(a,b,c)
+all &lt;- subset(Cyto_pos_markers, gene %in% all)
+all &lt;- all[!duplicated(all$gene), ]
+all$cluster &lt;- &quot;Common&quot;
+rownames(all) &lt;- NULL
+
+Single_unique &lt;-  setdiff(a, c(b,c))
+Single_unique &lt;- subset(Cyto_pos_markers, gene %in% Single_unique)
+Single_unique$cluster &lt;- &quot;Single&quot;
+rownames(Single_unique) &lt;- NULL
+
+Double_unique &lt;-  setdiff(b, c(a,c))
+Double_unique &lt;- subset(Cyto_pos_markers, gene %in% Double_unique)
+Double_unique$cluster &lt;- &quot;Double&quot;
+rownames(Double_unique) &lt;- NULL
+
+Triple_unique &lt;-  setdiff(c, c(a,b))
+Triple_unique &lt;- subset(Cyto_pos_markers, gene %in% Triple_unique)
+Triple_unique$cluster &lt;- &quot;Triple&quot;
+rownames(Triple_unique) &lt;- NULL
+
+Double_Triple &lt;- intersect(b,c)
+Double_Triple &lt;- setdiff(Double_Triple, a)
+Double_Triple &lt;- subset(Cyto_pos_markers, gene %in% Double_Triple)
+Double_Triple &lt;- Double_Triple[!duplicated(Double_Triple$gene),]
+Double_Triple$cluster &lt;- &quot;Double_Triple&quot;
+rownames(Triple_unique) &lt;- NULL
+
+heatmap_genes &lt;- rbind(Single_unique, Double_unique, Triple_unique, Double_Triple, all)
+
+## ensure correct levels
+levels(as.factor(heatmap_genes$cluster))</code></pre>
+<pre><code>[1] &quot;Common&quot;        &quot;Double&quot;        &quot;Double_Triple&quot; &quot;Single&quot;       
+[5] &quot;Triple&quot;       </code></pre>
+<pre class="r"><code>levels &lt;- c(&quot;Single&quot;, &quot;Double&quot;, &quot;Triple&quot;, &quot;Double_Triple&quot;, &quot;Common&quot;)
+heatmap_genes$cluster &lt;- factor(x = heatmap_genes$cluster, levels = levels)
+levels(as.factor(heatmap_genes$cluster))</code></pre>
+<pre><code>[1] &quot;Single&quot;        &quot;Double&quot;        &quot;Triple&quot;        &quot;Double_Triple&quot;
+[5] &quot;Common&quot;       </code></pre>
+<pre class="r"><code>## Create heatmap
+mtx &lt;- Cyto_pos_avg@assays$RNA@scale.data
+mtx &lt;- as.data.frame(mtx)
+
+mtx_sub &lt;-subset(mtx, rownames(mtx) %in% heatmap_genes$gene)
+mtx_sub &lt;- mtx_sub %&gt;% arrange(factor(rownames(mtx_sub), levels = heatmap_genes$gene))
+mtx_sub &lt;- mtx_sub[, 12:1]
+
+meta &lt;- Cyto_pos_avg@meta.data
+meta$cluster &lt;- meta$orig.ident
+meta$mouse &lt;- gsub(&quot;.*_&quot;, &quot;&quot;, rownames(Cyto_pos_avg@meta.data))
+meta$cluster &lt;- factor(x = meta$cluster, levels = rev(simp_Levels)) 
+meta &lt;- meta[12:1,]
+
+col_fun&lt;-colorRamp2(c(-1.5,-0, 1.5), c(&quot;#2166ac&quot;, &quot;#EEEEEE&quot;, &quot;#b2182b&quot;))
+
+cluster &lt;- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c(
+&quot;Single +&quot; =  &quot;#d33502&quot;, 
+&quot;Double +&quot; =  &quot;#0d74b6&quot;,
+&quot;Triple +&quot; =  &quot;#725ca5&quot;), mouse = c(M1= &quot;#EFF3FF&quot;, M2= &quot;#BDD7E7&quot;, M3= &quot;#6BAED6&quot;, M4 = &quot;#2171B5&quot;)))
+
+H &lt;- Heatmap(mtx_sub, border = T, top_annotation = cluster, col = col_fun, row_split = heatmap_genes$cluster, column_split = meta$cluster,  cluster_rows = F, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = &quot; &quot;, row_title_rot = 270, row_names_side = &quot;left&quot;, row_names_rot = -30, heatmap_legend_param = list(legend_direction = &quot;horizontal&quot;, legend_width = unit(3, &quot;cm&quot;),  labels_gp = gpar(fontsize = 15), labels_rot = -90,
+        title = &quot;&quot;, 
+        title_gp = gpar(box_fill = &quot;grey&quot;),
+        at = c(-1.5, 0, 1.5)
+    )) 
+
+png(filename =  &#39;../output/01_/Fig4B_Heatmap.png&#39;, width = 3.5, height = 15,units = &#39;in&#39;, res = 300)
+draw(H, heatmap_legend_side = &quot;bottom&quot;)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig4B_Heatmap.png" /></p>
+</div>
+<div id="fig-4d" class="section level2">
+<h2>Fig 4D</h2>
+<pre class="r"><code>## Create per mouse averaged expression object (this is redundant as was also conducted above)
+Idents(Tc) &lt;- &quot;CD4ID&quot;
+Tc.Avg &lt;- AverageExpression(Tc, assays = &quot;RNA&quot;, slot = &quot;scale.data&quot;, return.seurat = T, add.ident = &quot;Mouse&quot;)
+
+survival &lt;- c(&quot;Bcl2a1a&quot;,
+&quot;Bcl2l1&quot;,
+&quot;Myc&quot;,
+&quot;Il15ra&quot;,
+&quot;Il2ra&quot;,
+&quot;Tnfrsf4&quot;,
+&quot;Tnfsf8&quot;,
+&quot;Tnfrsf1b&quot;,
+&quot;Slamf1&quot;,                         
+&quot;Slc7a5&quot;,                           
+&quot;Stat5a&quot;,                          
+&quot;Stat6&quot;,                            
+&quot;Tbx21&quot;,
+&quot;Tfrc&quot;,
+&quot;Foxo1&quot;,
+&quot;Casp1&quot;,
+&quot;Casp8&quot;,
+&quot;Cblb&quot;,
+&quot;Gata3&quot;,
+&quot;Stat1&quot;)</code></pre>
+<pre class="r"><code>## Create heatmap of survival genes
+mtx &lt;- Tc.Avg@assays$RNA@scale.data
+mtx &lt;- as.data.frame(mtx)
+
+mtx_sub &lt;-subset(mtx, rownames(mtx) %in% survival)
+mtx_sub &lt;- mtx_sub %&gt;% arrange(factor(rownames(mtx_sub), levels = survival))
+
+meta &lt;- Tc.Avg@meta.data
+meta$cluster &lt;- meta$orig.ident
+meta$cluster &lt;- gsub(&quot;Eomes&quot;, &quot;Eomes_hi&quot;, meta$cluster)
+meta$mouse &lt;- gsub(&quot;.*_&quot;, &quot;&quot;, rownames(Tc.Avg@meta.data))
+meta$cluster &lt;- factor(x = meta$cluster, levels = simp_Levels)
+
+cluster &lt;- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c(&quot;Naïve&quot; = &quot;#faa818&quot;,
+&quot;Tregs&quot; =  &quot;#41a30d&quot;, 
+&quot;Tem 1&quot; =  &quot;#fbdf72&quot;,
+&quot;Tem 2&quot; =  &quot;#367d7d&quot;, 
+&quot;Tem 3&quot; =  &quot;#f5b390&quot;,
+&quot;Tem 4&quot; =  &quot;#342739&quot;, 
+&quot;Tem 5&quot; =  &quot;#bed678&quot;,
+&quot;Eomes_hi&quot; =  &quot;#a6d9ee&quot;, 
+&quot;Cytotoxic&quot; =  &quot;#60824f&quot;,
+&quot;Single +&quot; =  &quot;#d33502&quot;, 
+&quot;Double +&quot; =  &quot;#0d74b6&quot;,
+&quot;Triple +&quot; =  &quot;#725ca5&quot;), mouse = c(M1= &quot;#EFF3FF&quot;, M2= &quot;#BDD7E7&quot;, M3= &quot;#6BAED6&quot;, M4 = &quot;#2171B5&quot;)))
+
+ H &lt;- Heatmap(mtx_sub, border = T, width = ncol(mtx_sub)*unit(2.5, &quot;mm&quot;), height = nrow(mtx_sub)*unit(6, &quot;mm&quot;), top_annotation = cluster, col = col_fun,   cluster_rows = F, column_split = meta$cluster, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = &quot; &quot;, column_title = &quot; &quot;, row_title_rot = 270, row_names_side = &quot;left&quot;, row_names_rot = 0, heatmap_legend_param = list(legend_direction = &quot;horizontal&quot;, legend_width = unit(3, &quot;cm&quot;),  labels_gp = gpar(fontsize = 15), labels_rot = -90,
+        title = &quot;&quot;, 
+        title_gp = gpar(box_fill = &quot;grey&quot;),
+        at = c(-1.5, 0, 1.5)
+    )) 
+ 
+png(filename =  &#39;../output/01_/Fig4D_Heatmap.png&#39;, width = 6, height = 10,units = &#39;in&#39;, res = 300)
+draw(H, heatmap_legend_side = &quot;bottom&quot;)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig4D_Heatmap.png" /></p>
+</div>
+<div id="supp-6c" class="section level2">
+<h2>Supp 6C</h2>
+<pre class="r"><code>png(filename =  &#39;../output/01_/Supp_6C_Cd44.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+FeaturePlot(Tc, &quot;Cd44&quot;, max.cutoff = 1.5) &amp; NoAxes() &amp; NoLegend() &amp; theme(aspect.ratio = 1)
+invisible(dev.off())
+
+png(filename =  &#39;../output/01_/Supp_6C_Sell.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+FeaturePlot(Tc, &quot;Sell&quot;, max.cutoff = 3) &amp; NoAxes() &amp; NoLegend() &amp; theme(aspect.ratio = 1)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Supp_6C_Cd44.png" /> <img
+src="../output/01_/Supp_6C_Sell.png" /></p>
+</div>
+<div id="supp-7" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Supp 7</h2>
+<div id="supp-7b" class="section level3">
+<h3>Supp 7B</h3>
+<pre class="r"><code>Idents(Tc) &lt;- &quot;CD4ID&quot;
+## create averaged expression object for visualisation
+Tc.Avg &lt;- AverageExpression(Tc, assays = &quot;RNA&quot;, return.seurat = T)</code></pre>
+<pre class="r"><code>## create heatmap
+mtx &lt;- Tc.Avg@assays$RNA@scale.data
+mtx &lt;- as.data.frame(mtx)
+
+mtx_sub &lt;-subset(mtx, rownames(mtx) %in% no.dup$gene)
+mtx_sub &lt;- mtx_sub %&gt;% arrange(factor(rownames(mtx_sub), levels = no.dup$gene))
+
+meta &lt;- Tc.Avg@meta.data
+meta$cluster &lt;- rownames(meta)
+
+col_fun&lt;-colorRamp2(c(-2,-0, 2), c(&quot;#2166ac&quot;, &quot;#EEEEEE&quot;, &quot;#b2182b&quot;))
+
+cluster &lt;- HeatmapAnnotation(cluster = meta$cluster, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c(
+&quot;Naïve&quot; = &quot;#faa818&quot;,
+&quot;Tregs&quot; =  &quot;#41a30d&quot;, 
+&quot;Tem 1&quot; =  &quot;#fbdf72&quot;,
+&quot;Tem 2&quot; =  &quot;#367d7d&quot;, 
+&quot;Tem 3&quot; =  &quot;#f5b390&quot;,
+&quot;Tem 4&quot; =  &quot;#342739&quot;, 
+&quot;Tem 5&quot; =  &quot;#bed678&quot;,
+&quot;Eomes_hi&quot; =  &quot;#a6d9ee&quot;, 
+&quot;Cytotoxic&quot; =  &quot;#60824f&quot;,
+&quot;Single +&quot; =  &quot;#d33502&quot;, 
+&quot;Double +&quot; =  &quot;#0d74b6&quot;,
+&quot;Triple +&quot; =  &quot;#725ca5&quot;)))
+
+labels = rowAnnotation(x = anno_mark(at = c(1,4,8,14,35,37,39,44,46,50,54,59,63,64,66,68,72,73,74,76,77,85,89,90,92,97,98,102,103,118,119,123,125,135),
+labels_rot = -30, labels_gp = gpar(fontsize=10), padding = unit(2, &quot;mm&quot;), 
+labels = no.dup$gene[c(1,4,8,14,35,37,39,44,46,50,54,59,63,64,66,68,72,73,74,76,77,85,89,90,92,97,98,102,103,118,119,123,125,135)],
+side = &quot;left&quot;))
+
+H &lt;- Heatmap(mtx_sub, border = T, top_annotation = cluster, left_annotation = labels, row_names_gp = gpar(fontsize=0), col = col_fun, row_split = no.dup$cluster,  cluster_rows = F, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = &quot; &quot;, heatmap_legend_param = list(legend_direction = &quot;horizontal&quot;, legend_width = unit(3, &quot;cm&quot;),  labels_gp = gpar(fontsize = 15), labels_rot = 0,
+        title = &quot;&quot;, 
+        title_gp = gpar(box_fill = &quot;grey&quot;),
+        at = c(-2, 0, 2)
+    )) 
+
+png(filename =  &#39;../output/01_/Supp7B_Heatmap.png&#39;, width = 4, height = 8,units = &#39;in&#39;, res = 300)
+draw(H, heatmap_legend_side = &quot;bottom&quot;)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Supp7B_Heatmap.png" /></p>
+</div>
+<div id="supp-7a-c-d" class="section level3">
+<h3>Supp 7A, C, D</h3>
+<pre class="r"><code>## create violin plot of cytokine expression
+Supp7_C &lt;- VlnPlot(Tc, assay = &quot;RNA&quot;, features = c(&quot;Tnf&quot;, &quot;Ifng&quot;, &quot;Il2&quot;), stack = T, flip = T) + theme(plot.margin = unit(c(1,1,1,2), &quot;cm&quot;), axis.title.x = NULL) + xlab(&quot;&quot;) + NoLegend()</code></pre>
+<pre class="r"><code>## create UMAP split by tissue
+
+Supp7_D &lt;-DimPlot(object = Tc, label = F, pt.size = 2, cols = my_color_palette, split.by = &quot;Tissue&quot;) + theme(strip.text.x = element_text(size = 40, face = &quot;bold&quot;), axis.line = element_line(colour = &#39;black&#39;, size = 2.5), axis.ticks = element_line(size = 5), axis.ticks.length = unit(0.5, &quot;cm&quot;), axis.text = element_text(size = 25), axis.title.x = element_blank(), axis.title.y = element_blank())  + NoLegend()</code></pre>
+<pre class="r"><code>## Align supplemental figures 13 A, C and D
+plot_list &lt;- list(Supp7_A, Supp7_C, Supp7_D)
+
+png(filename =  &#39;../output/01_/Sup7A_C_D.png&#39;, width = 5, height = 10,units = &#39;in&#39;, res = 300)
+plot_grid(plotlist = plot_list, ncol = 1, align = &quot;v&quot;, rel_heights = c(1,1, 1))
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Sup7A_C_D.png" /></p>
+</div>
+</div>
+</div>
+<div id="fig-5" class="section level1 tabset tabset-pills">
+<h1 class="tabset tabset-pills">Fig 5</h1>
+<pre class="r"><code>## Load &amp; Save Data from BD
+TCR &lt;- load.BD(dir = &quot;../data/TCR data/&quot;, file.name = &quot;_1_TRACE-TCR-full_VDJ_perCell.csv&quot;)
+
+
+## Create list with only paired chains
+TCR &lt;- combineTCR(TCR, samples = c(&quot;&quot;),
+                   ID = c(&quot;&quot;), cells = &quot;T-AB&quot;, removeNA = T)
+
+## remove _ from barcodes to allow for combining.
+ReplaceBarcodes &lt;- gsub(&quot;__*&quot;, &quot;&quot;, TCR[[&quot;_&quot;]][[&quot;barcode&quot;]])
+TCR[[&quot;_&quot;]][[&quot;barcode&quot;]] &lt;- ReplaceBarcodes
+
+## Combine with Seurat Objects
+Tc &lt;- combineExpression(TCR, Tc, cloneCall=&quot;gene&quot;)
+
+## Recalculate Clonetype based on Mouse
+Tc &lt;- recalculateFrequency(Tc, cloneCall = &quot;aa&quot;, groupBy = &quot;Mouse&quot;)
+
+Tc$Frequency &lt;- Tc$recalFrequency.Mouse
+Tc$recalFrequency.Mouse &lt;- NULL
+
+## Remove cells with no paired TCR data
+Tc &lt;- subset(Tc, Frequency &gt; 0)
+
+## Assign levels
+slot(Tc, &quot;meta.data&quot;)$cloneType &lt;- factor(slot(Tc, &quot;meta.data&quot;)$cloneType, 
+                levels = c(&quot;Hyperexpanded (0.1 &lt; X &lt;= 1)&quot;, 
+                  &quot;Large (0.01 &lt; X &lt;= 0.1)&quot;, 
+                            &quot;Medium (0.001 &lt; X &lt;= 0.01)&quot;,
+                             &quot;Single Clone&quot;, NA))</code></pre>
+<div id="fig-5a" class="section level2">
+<h2>Fig 5A</h2>
+<pre class="r"><code>## Plot representation of cloneTypes within each cluster/ 
+Idents(Tc) &lt;- &quot;CD4ID&quot;
+png(filename =  &#39;../output/01_/Fig5A.png&#39;, width = 7, height = 8,units = &#39;in&#39;, res = 300)
+occupiedscRepertoire(Tc,proportion = T, label = F)  &amp; coord_flip() &amp; scale_fill_manual(&quot;Expansion&quot;, values = c(&quot;#FF4B20&quot;, &quot;#0348A6&quot;, &quot;light grey&quot;)) &amp; theme(text = element_text(size = 15, colour = &quot;black&quot;), axis.text = element_text(size = 25, colour = &quot;black&quot;), legend.text = element_text(size = 15, colour = &quot;black&quot;), legend.title = element_text(size = 25, colour = &quot;black&quot;), axis.line = element_line(colour = &quot;black&quot;), legend.position = &quot;top&quot;, legend.direction =  &quot;vertical&quot;, plot.margin = unit(c(1,1,1,1), &quot;cm&quot;))  &amp; xlab(&quot;&quot;)  &amp; ylab(&quot;Proportion&quot;)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig5A.png" /></p>
+</div>
+<div id="fig-5b" class="section level2">
+<h2>Fig 5B</h2>
+<pre class="r"><code>Idents(Tc) &lt;- &quot;cloneType&quot;
+
+## highlight clonetypes per mouse
+png(filename =  &#39;../output/01_/Fig5B.png&#39;, width = 12, height = 3,units = &#39;in&#39;, res = 300)
+DimPlot(Tc, group.by = &quot;cloneType&quot;, split.by = &quot;Mouse&quot;) +
+    scale_color_manual(values = c(&quot;#FF4B20&quot;, &quot;#0348A6&quot;, &quot;light grey&quot;))
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig5B.png" /></p>
+</div>
+<div id="fig-5c" class="section level2">
+<h2>Fig 5C</h2>
+<pre class="r"><code>## Highlight clones present within each cluster on the UMAP. Note that the clones selected are not defined as unique to each cluster, just that they were found within the &#39;query&#39; cluster. 
+
+## Isolate cells from expanded cloneTypes.
+Tc_Exp &lt;- subset(Tc, idents = &quot;Single Clone&quot;, invert =T)
+
+## Triple +
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Triple +&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = &quot;CD4ID&quot;
+Triple &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Triple&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+## Double +
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Double +&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = &quot;CD4ID&quot;
+Double &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Double&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+## Single +
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Single +&quot;)
+Probe_Clones &lt;- Probe$CTaa
+
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = &quot;CD4ID&quot;
+Single &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Single&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 1
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Tem 1&quot;)
+Probe_Clones &lt;- Probe$CTaa
+
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = &quot;CD4ID&quot;
+EM1 &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;TEM 1&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 2
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Tem 2&quot;)
+Probe_Clones &lt;- Probe$CTaa
+
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = &quot;CD4ID&quot;
+EM2 &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which)  + ggtitle(&quot;TEM 2&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 3
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Tem 3&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+
+Idents(Tc) = &quot;CD4ID&quot;
+EM3 &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;TEM 3&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+
+## EM 4
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Tem 4&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = &quot;CD4ID&quot;
+EM4 &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;TEM 4&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 5
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Tem 5&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+
+Idents(Tc) = &quot;CD4ID&quot;
+EM5 &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;TEM 5&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## Eomes_hi
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Eomes_hi&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = &quot;CD4ID&quot;
+Eomes &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Eomes&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## Cytotoxic
+Idents(Tc_Exp) = &quot;CD4ID&quot;
+Probe &lt;- subset(Tc_Exp, idents = &quot;Cytotoxic&quot;)
+Probe_Clones &lt;- Probe$CTaa
+Idents(Tc) &lt;- &quot;CTaa&quot;
+Which &lt;- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = &quot;CD4ID&quot;
+Cyto &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Cytotoxic&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()</code></pre>
+<pre class="r"><code>plotlist &lt;- list(EM1, EM2, EM3, EM4, EM5, Eomes, Cyto, Single, Double, Triple)
+
+png(filename =  &#39;../output/01_/Fig5C.png&#39;, width = 12, height = 5,units = &#39;in&#39;, res = 300)
+plot_grid(plotlist = plotlist, ncol = 5, align = &quot;v&quot;)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig5C.png" /></p>
+</div>
+<div id="fig-5d" class="section level2">
+<h2>Fig 5D</h2>
+<pre class="r"><code>## Create chord diagram to visualise the overlap in clones between clusters.
+circos.clear()
+circles &lt;- getCirclize(Tc_Exp, group.by = &quot;CD4ID&quot;)
+
+png(filename =  &#39;../output/01_/Fig5D.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+chordDiagram(circles, self.link = 1, grid.col = my_color_palette, directional = 2)
+invisible(dev.off())</code></pre>
+<p><img src="../output/01_/Fig5D.png" /></p>
+</div>
+<div id="fig-5e" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Fig 5E</h2>
+<pre class="r"><code>## Isolate expanded CDR3 Seqs from expanded for each mouse and probe for overlap (public) verses private cloneTypes
+Idents(Tc_Exp) &lt;- &quot;Mouse&quot;
+A_TCR &lt;- unique(subset(Tc_Exp, idents = &quot;M1&quot;)$CTaa)
+B_TCR &lt;- unique(subset(Tc_Exp, idents = &quot;M2&quot;)$CTaa)
+C_TCR &lt;- unique(subset(Tc_Exp, idents = &quot;M3&quot;)$CTaa)
+D_TCR &lt;- unique(subset(Tc_Exp, idents = &quot;M4&quot;)$CTaa)
+
+Venn &lt;- list(&#39;M1&#39; = A_TCR, &quot;M2&quot; = B_TCR, &quot;M3&quot; = C_TCR, &quot;M4&quot; = D_TCR)
+
+col &lt;- mouse_cols
+names(col) &lt;- NULL
+
+ggvenn::ggvenn(Venn, show_percentage = F, fill_color = col, text_size = 10, set_name_size = 12) + theme(plot.margin = unit(c(0,0,0,0), &quot;cm&quot;))</code></pre>
+<p><img src="figure/01_.Rmd/unnamed-chunk-32-1.png" width="3000" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.3 (2023-03-15)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur ... 10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats4    grid      stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] ggvenn_0.1.9                ArchR_1.0.1                
+ [3] magrittr_2.0.3              rhdf5_2.42.0               
+ [5] SummarizedExperiment_1.28.0 MatrixGenerics_1.10.0      
+ [7] plot1cell_0.0.0.9000        wordcloud_2.6              
+ [9] simplifyEnrichment_1.8.0    GEOquery_2.66.0            
+[11] rlang_1.1.0                 EnsDb.Hsapiens.v86_2.99.0  
+[13] ensembldb_2.22.0            AnnotationFilter_1.22.0    
+[15] GenomicFeatures_1.50.4      AnnotationDbi_1.60.2       
+[17] Biobase_2.58.0              GenomicRanges_1.50.2       
+[19] GenomeInfoDb_1.34.9         IRanges_2.32.0             
+[21] S4Vectors_0.36.2            BiocGenerics_0.44.0        
+[23] loomR_0.2.0                 itertools_0.1-3            
+[25] iterators_1.0.14            R6_2.5.1                   
+[27] hdf5r_1.3.8                 Matrix_1.5-3               
+[29] data.table_1.14.8           DoubletFinder_2.0.3        
+[31] matrixStats_0.63.0          ComplexUpset_1.3.3         
+[33] purrr_1.0.1                 ggbeeswarm_0.7.1           
+[35] reshape2_1.4.4              biomaRt_2.54.1             
+[37] RColorBrewer_1.1-3          progress_1.2.2             
+[39] scales_1.2.1                MASS_7.3-58.3              
+[41] ggh4x_0.2.3                 plotly_4.10.1              
+[43] ComplexHeatmap_2.14.0       circlize_0.4.15            
+[45] cowplot_1.1.1               scRepertoire_1.8.0         
+[47] ggplot2_3.4.1               dplyr_1.1.1                
+[49] SeuratObject_4.1.3          Seurat_4.3.0               
+[51] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] stringdist_0.9.10           ica_1.0-3                  
+  [3] ps_1.7.3                    Rsamtools_2.14.0           
+  [5] foreach_1.5.2               lmtest_0.9-40              
+  [7] rprojroot_2.0.3             crayon_1.5.2               
+  [9] rhdf5filters_1.10.1         MAST_1.24.1                
+ [11] nlme_3.1-162                GOSemSim_2.24.0            
+ [13] XVector_0.38.0              ROCR_1.0-11                
+ [15] irlba_2.3.5.1               SparseM_1.81               
+ [17] callr_3.7.3                 limma_3.54.2               
+ [19] filelock_1.0.2              BiocParallel_1.32.6        
+ [21] rjson_0.2.21                bit64_4.0.5                
+ [23] evmix_2.12                  glue_1.6.2                 
+ [25] sctransform_0.3.5           parallel_4.2.3             
+ [27] processx_3.8.0              vipor_0.4.5                
+ [29] spatstat.sparse_3.0-1       spatstat.geom_3.1-0        
+ [31] VGAM_1.1-8                  tidyselect_1.2.0           
+ [33] powerTCR_1.18.0             fitdistrplus_1.1-8         
+ [35] XML_3.99-0.14               tidyr_1.3.0                
+ [37] zoo_1.8-11                  GenomicAlignments_1.34.1   
+ [39] xtable_1.8-4                evaluate_0.20              
+ [41] cli_3.6.1                   zlibbioc_1.44.0            
+ [43] rstudioapi_0.14             miniUI_0.1.1.1             
+ [45] sp_1.6-0                    whisker_0.4.1              
+ [47] bslib_0.4.2                 shiny_1.7.4                
+ [49] xfun_0.38                   tm_0.7-11                  
+ [51] clue_0.3-64                 cluster_2.1.4              
+ [53] tidygraph_1.2.3             KEGGREST_1.38.0            
+ [55] tibble_3.2.1                ggrepel_0.9.3              
+ [57] listenv_0.9.0               Biostrings_2.66.0          
+ [59] png_0.1-8                   permute_0.9-7              
+ [61] future_1.32.0               withr_2.5.0                
+ [63] bitops_1.0-7                slam_0.1-50                
+ [65] ggforce_0.4.1               plyr_1.8.8                 
+ [67] pillar_1.9.0                RcppParallel_5.1.7         
+ [69] GlobalOptions_0.1.2         cachem_1.0.7               
+ [71] fs_1.6.1                    NLP_0.2-1                  
+ [73] GetoptLong_1.0.5            vctrs_0.6.1                
+ [75] ellipsis_0.3.2              generics_0.1.3             
+ [77] rgdal_1.6-5                 tools_4.2.3                
+ [79] beeswarm_0.4.0              munsell_0.5.0              
+ [81] tweenr_2.0.2                DelayedArray_0.24.0        
+ [83] fastmap_1.1.1               compiler_4.2.3             
+ [85] abind_1.4-5                 httpuv_1.6.9               
+ [87] rtracklayer_1.58.0          rgeos_0.6-2                
+ [89] truncdist_1.0-2             GenomeInfoDbData_1.2.9     
+ [91] gridExtra_2.3               lattice_0.20-45            
+ [93] deldir_1.0-6                utf8_1.2.3                 
+ [95] later_1.3.0                 BiocFileCache_2.6.1        
+ [97] jsonlite_1.8.4              pbapply_1.7-0              
+ [99] lazyeval_0.2.2              promises_1.2.0.1           
+[101] doParallel_1.0.17           goftest_1.2-3              
+[103] spatstat.utils_3.0-2        reticulate_1.28            
+[105] rmarkdown_2.21              Rtsne_0.16                 
+[107] uwot_0.1.14                 igraph_1.4.1               
+[109] proxyC_0.3.3                survival_3.5-5             
+[111] yaml_2.3.7                  htmltools_0.5.5            
+[113] memoise_2.0.1               BiocIO_1.8.0               
+[115] graphlayouts_0.8.4          viridisLite_0.4.1          
+[117] digest_0.6.31               mime_0.12                  
+[119] rappdirs_0.3.3              RSQLite_2.3.0              
+[121] future.apply_1.10.0         blob_1.2.4                 
+[123] vegan_2.6-4                 splines_4.2.3              
+[125] labeling_0.4.2              Rhdf5lib_1.20.0            
+[127] Cairo_1.6-0                 ProtGenerics_1.30.0        
+[129] RCurl_1.98-1.12             hms_1.1.3                  
+[131] colorspace_2.1-0            shape_1.4.6                
+[133] sass_0.4.5                  Rcpp_1.0.10                
+[135] RANN_2.6.1                  fansi_1.0.4                
+[137] tzdb_0.3.0                  parallelly_1.35.0          
+[139] ggridges_0.5.4              lifecycle_1.0.3            
+[141] curl_5.0.0                  leiden_0.4.3               
+[143] jquerylib_0.1.4             RcppAnnoy_0.0.20           
+[145] org.Hs.eg.db_3.16.0         spatstat.explore_3.1-0     
+[147] stringr_1.5.0               htmlwidgets_1.6.2          
+[149] polyclip_1.10-4             mgcv_1.8-42                
+[151] globals_0.16.2              patchwork_1.1.2            
+[153] spatstat.random_3.1-4       progressr_0.13.0           
+[155] codetools_0.2-19            GO.db_3.16.0               
+[157] getPass_0.2-2               prettyunits_1.1.1          
+[159] SingleCellExperiment_1.20.1 dbplyr_2.3.2               
+[161] gtable_0.3.3                DBI_1.1.3                  
+[163] git2r_0.31.0                ggalluvial_0.12.5          
+[165] highr_0.10                  tensor_1.5                 
+[167] httr_1.4.5                  KernSmooth_2.23-20         
+[169] stringi_1.7.12              farver_2.1.1               
+[171] cubature_2.0.4.6            viridis_0.6.2              
+[173] magick_2.7.4                xml2_1.3.3                 
+[175] restfulr_0.0.15             readr_2.1.4                
+[177] scattermore_0.8             bit_4.0.5                  
+[179] spatstat.data_3.0-1         ggraph_2.1.0               
+[181] pkgconfig_2.0.3             gsl_2.1-8                  
+[183] evd_2.3-6.1                 knitr_1.42                 </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.3 (2023-03-15)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur ... 10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats4    grid      stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] ggvenn_0.1.9                ArchR_1.0.1                
+ [3] magrittr_2.0.3              rhdf5_2.42.0               
+ [5] SummarizedExperiment_1.28.0 MatrixGenerics_1.10.0      
+ [7] plot1cell_0.0.0.9000        wordcloud_2.6              
+ [9] simplifyEnrichment_1.8.0    GEOquery_2.66.0            
+[11] rlang_1.1.0                 EnsDb.Hsapiens.v86_2.99.0  
+[13] ensembldb_2.22.0            AnnotationFilter_1.22.0    
+[15] GenomicFeatures_1.50.4      AnnotationDbi_1.60.2       
+[17] Biobase_2.58.0              GenomicRanges_1.50.2       
+[19] GenomeInfoDb_1.34.9         IRanges_2.32.0             
+[21] S4Vectors_0.36.2            BiocGenerics_0.44.0        
+[23] loomR_0.2.0                 itertools_0.1-3            
+[25] iterators_1.0.14            R6_2.5.1                   
+[27] hdf5r_1.3.8                 Matrix_1.5-3               
+[29] data.table_1.14.8           DoubletFinder_2.0.3        
+[31] matrixStats_0.63.0          ComplexUpset_1.3.3         
+[33] purrr_1.0.1                 ggbeeswarm_0.7.1           
+[35] reshape2_1.4.4              biomaRt_2.54.1             
+[37] RColorBrewer_1.1-3          progress_1.2.2             
+[39] scales_1.2.1                MASS_7.3-58.3              
+[41] ggh4x_0.2.3                 plotly_4.10.1              
+[43] ComplexHeatmap_2.14.0       circlize_0.4.15            
+[45] cowplot_1.1.1               scRepertoire_1.8.0         
+[47] ggplot2_3.4.1               dplyr_1.1.1                
+[49] SeuratObject_4.1.3          Seurat_4.3.0               
+[51] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] stringdist_0.9.10           ica_1.0-3                  
+  [3] ps_1.7.3                    Rsamtools_2.14.0           
+  [5] foreach_1.5.2               lmtest_0.9-40              
+  [7] rprojroot_2.0.3             crayon_1.5.2               
+  [9] rhdf5filters_1.10.1         MAST_1.24.1                
+ [11] nlme_3.1-162                GOSemSim_2.24.0            
+ [13] XVector_0.38.0              ROCR_1.0-11                
+ [15] irlba_2.3.5.1               SparseM_1.81               
+ [17] callr_3.7.3                 limma_3.54.2               
+ [19] filelock_1.0.2              BiocParallel_1.32.6        
+ [21] rjson_0.2.21                bit64_4.0.5                
+ [23] evmix_2.12                  glue_1.6.2                 
+ [25] sctransform_0.3.5           parallel_4.2.3             
+ [27] processx_3.8.0              vipor_0.4.5                
+ [29] spatstat.sparse_3.0-1       spatstat.geom_3.1-0        
+ [31] VGAM_1.1-8                  tidyselect_1.2.0           
+ [33] powerTCR_1.18.0             fitdistrplus_1.1-8         
+ [35] XML_3.99-0.14               tidyr_1.3.0                
+ [37] zoo_1.8-11                  GenomicAlignments_1.34.1   
+ [39] xtable_1.8-4                evaluate_0.20              
+ [41] cli_3.6.1                   zlibbioc_1.44.0            
+ [43] rstudioapi_0.14             miniUI_0.1.1.1             
+ [45] sp_1.6-0                    whisker_0.4.1              
+ [47] bslib_0.4.2                 shiny_1.7.4                
+ [49] xfun_0.38                   tm_0.7-11                  
+ [51] clue_0.3-64                 cluster_2.1.4              
+ [53] tidygraph_1.2.3             KEGGREST_1.38.0            
+ [55] tibble_3.2.1                ggrepel_0.9.3              
+ [57] listenv_0.9.0               Biostrings_2.66.0          
+ [59] png_0.1-8                   permute_0.9-7              
+ [61] future_1.32.0               withr_2.5.0                
+ [63] bitops_1.0-7                slam_0.1-50                
+ [65] ggforce_0.4.1               plyr_1.8.8                 
+ [67] pillar_1.9.0                RcppParallel_5.1.7         
+ [69] GlobalOptions_0.1.2         cachem_1.0.7               
+ [71] fs_1.6.1                    NLP_0.2-1                  
+ [73] GetoptLong_1.0.5            vctrs_0.6.1                
+ [75] ellipsis_0.3.2              generics_0.1.3             
+ [77] rgdal_1.6-5                 tools_4.2.3                
+ [79] beeswarm_0.4.0              munsell_0.5.0              
+ [81] tweenr_2.0.2                DelayedArray_0.24.0        
+ [83] fastmap_1.1.1               compiler_4.2.3             
+ [85] abind_1.4-5                 httpuv_1.6.9               
+ [87] rtracklayer_1.58.0          rgeos_0.6-2                
+ [89] truncdist_1.0-2             GenomeInfoDbData_1.2.9     
+ [91] gridExtra_2.3               lattice_0.20-45            
+ [93] deldir_1.0-6                utf8_1.2.3                 
+ [95] later_1.3.0                 BiocFileCache_2.6.1        
+ [97] jsonlite_1.8.4              pbapply_1.7-0              
+ [99] lazyeval_0.2.2              promises_1.2.0.1           
+[101] doParallel_1.0.17           goftest_1.2-3              
+[103] spatstat.utils_3.0-2        reticulate_1.28            
+[105] rmarkdown_2.21              Rtsne_0.16                 
+[107] uwot_0.1.14                 igraph_1.4.1               
+[109] proxyC_0.3.3                survival_3.5-5             
+[111] yaml_2.3.7                  htmltools_0.5.5            
+[113] memoise_2.0.1               BiocIO_1.8.0               
+[115] graphlayouts_0.8.4          viridisLite_0.4.1          
+[117] digest_0.6.31               mime_0.12                  
+[119] rappdirs_0.3.3              RSQLite_2.3.0              
+[121] future.apply_1.10.0         blob_1.2.4                 
+[123] vegan_2.6-4                 splines_4.2.3              
+[125] labeling_0.4.2              Rhdf5lib_1.20.0            
+[127] Cairo_1.6-0                 ProtGenerics_1.30.0        
+[129] RCurl_1.98-1.12             hms_1.1.3                  
+[131] colorspace_2.1-0            shape_1.4.6                
+[133] sass_0.4.5                  Rcpp_1.0.10                
+[135] RANN_2.6.1                  fansi_1.0.4                
+[137] tzdb_0.3.0                  parallelly_1.35.0          
+[139] ggridges_0.5.4              lifecycle_1.0.3            
+[141] curl_5.0.0                  leiden_0.4.3               
+[143] jquerylib_0.1.4             RcppAnnoy_0.0.20           
+[145] org.Hs.eg.db_3.16.0         spatstat.explore_3.1-0     
+[147] stringr_1.5.0               htmlwidgets_1.6.2          
+[149] polyclip_1.10-4             mgcv_1.8-42                
+[151] globals_0.16.2              patchwork_1.1.2            
+[153] spatstat.random_3.1-4       progressr_0.13.0           
+[155] codetools_0.2-19            GO.db_3.16.0               
+[157] getPass_0.2-2               prettyunits_1.1.1          
+[159] SingleCellExperiment_1.20.1 dbplyr_2.3.2               
+[161] gtable_0.3.3                DBI_1.1.3                  
+[163] git2r_0.31.0                ggalluvial_0.12.5          
+[165] highr_0.10                  tensor_1.5                 
+[167] httr_1.4.5                  KernSmooth_2.23-20         
+[169] stringi_1.7.12              farver_2.1.1               
+[171] cubature_2.0.4.6            viridis_0.6.2              
+[173] magick_2.7.4                xml2_1.3.3                 
+[175] restfulr_0.0.15             readr_2.1.4                
+[177] scattermore_0.8             bit_4.0.5                  
+[179] spatstat.data_3.0-1         ggraph_2.1.0               
+[181] pkgconfig_2.0.3             gsl_2.1-8                  
+[183] evd_2.3-6.1                 knitr_1.42                 </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

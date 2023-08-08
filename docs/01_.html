@@ -529,13 +529,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongd197aab">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomJonathanNoonanWesterhoftree6e93f25c0ed177cf4e4acb8c9e9dfcae90bf19d9targetblank6e93f25a">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> d197aab
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/JonathanNoonan/Westerhof/tree/6e93f25c0ed177cf4e4acb8c9e9dfcae90bf19d9" target="_blank">6e93f25</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongd197aab"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomJonathanNoonanWesterhoftree6e93f25c0ed177cf4e4acb8c9e9dfcae90bf19d9targetblank6e93f25a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -544,7 +546,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version d197aab.
+The results in this page were generated with repository version
+<a href="https://github.com/JonathanNoonan/Westerhof/tree/6e93f25c0ed177cf4e4acb8c9e9dfcae90bf19d9" target="_blank">6e93f25</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -562,17 +565,16 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
 
 Untracked files:
     Untracked:  analysis/01-Functions.R
     Untracked:  data/TCR data/
     Untracked:  data/individual datasets for each sample/
     Untracked:  data/overall data/
-    Untracked:  output/01_/
 
 Unstaged changes:
     Modified:   _workflowr.yml
-    Modified:   analysis/_site.yml
     Deleted:    analysis/license.Rmd
     Deleted:    data/README.md
 
@@ -701,7 +703,6 @@ library(ggvenn)))</code></pre>
 <h2>Load Functions</h2>
 <pre class="r"><code>source(&quot;01-Functions.R&quot;)</code></pre>
 <pre class="r"><code>## Load Data and clean
-
 counts &lt;- read.table(&quot;../data/overall data/_1_Combined_TRACE-TCR-full_DBEC_MolsPerCell.csv&quot;, skip = 7, sep = &quot;,&quot;, header = TRUE, row.names = 1)
 
 colnames(counts) &lt;- gsub(&quot;_.*&quot;, &quot;&quot;, colnames(counts)) 
@@ -833,42 +834,42 @@ circ_data$Cluster &lt;- factor(circ_data$Cluster, levels = levels(Tc))
 Clusters &lt;- my_color_palette[levels(Tc)]</code></pre>
 <pre class="r"><code>## plot and save figure
 
-dir.create(&quot;../output/01_&quot;)
+dir.create(&quot;../docs/assets/01_&quot;)
 
-png(filename =  &#39;../output/01_/Fig4A_UMAP.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig4A_UMAP.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
 circos.clear()
 circos.par(circle.margin = 0.1)
 plot_circlize2(circ_data, do.label = F, pt.size = 1, col.use = Clusters, bg.color = &#39;white&#39;, kde2d.n = 10, repel = T, label.cex = 50, contour.levels = 0) 
 add_track2(circ_data, group = &quot;Tissue&quot;, colors = Tissue_cols , track_num = 2)
 add_track2(circ_data, group = &quot;Mouse&quot;, colors = mouse_cols, track_num = 3) 
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig4A_UMAP.png" /></p>
+<p><img src="assets/01_/Fig4A_UMAP.png" /></p>
 </div>
 <div id="legends" class="section level2">
 <h2>Legends</h2>
-<pre class="r"><code>dir.create(&#39;../output/01_/Legends&#39;)
+<pre class="r"><code>dir.create(&#39;../docs/assets/01_/Legends&#39;)
 
-png(filename =  &#39;../output/01_/Legends/Cluster_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Legends/Cluster_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
 plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
 legend(&quot;topleft&quot;, legend = names(my_color_palette), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
     col = my_color_palette)
 mtext(&quot;Cluster&quot;, at=0.2, cex=2)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Legends/Cluster_Legend.png" /></p>
-<pre class="r"><code>png(filename =  &#39;../output/01_/Legends/Mouse_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+<p><img src="assets/01_/Legends/Cluster_Legend.png" /></p>
+<pre class="r"><code>png(filename =  &#39;../docs/assets/01_/Legends/Mouse_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
 plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
 legend(&quot;topleft&quot;, legend = names(mouse_cols), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
     col = mouse_cols)
 mtext(&quot;Mouse&quot;, at=0.2, cex=2)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Legends/Mouse_Legend.png" /></p>
-<pre class="r"><code>png(filename =  &#39;../output/01_/Legends/Tissue_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
+<p><img src="assets/01_/Legends/Mouse_Legend.png" /></p>
+<pre class="r"><code>png(filename =  &#39;../docs/assets/01_/Legends/Tissue_Legend.png&#39;, width = 10, height = 10,units = &#39;in&#39;, res = 300)
 plot(NULL ,xaxt=&#39;n&#39;,yaxt=&#39;n&#39;,bty=&#39;n&#39;,ylab=&#39;&#39;,xlab=&#39;&#39;, xlim=0:1, ylim=0:1)
 legend(&quot;topleft&quot;, legend = names(Tissue_cols), pch=16, pt.cex=3, cex=1.5, bty=&#39;n&#39;,
     col = Tissue_cols)
 mtext(&quot;Tissue&quot;, at=0.2, cex=2)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Legends/Tissue_Legend.png" /></p>
+<p><img src="assets/01_/Legends/Tissue_Legend.png" /></p>
 </div>
 <div id="fig-4b-cytokine-heatmap" class="section level2">
 <h2>Fig 4B Cytokine+ Heatmap</h2>
@@ -880,7 +881,7 @@ celltypeDEG &lt;- FindAllMarkers(Tc, test.use = &quot;MAST&quot;, assay = &quot;
 celltypeDEG &lt;- subset(celltypeDEG, p_val_adj &lt;0.05)
 
 ## save as table
-write.csv(celltypeDEG, file = &quot;../output/01_/celltypeDEG.csv&quot;)
+write.csv(celltypeDEG, file = &quot;../docs/assets/01_/celltypeDEG.csv&quot;)
 
 ## remove genes as rownames
 rownames(celltypeDEG) &lt;- NULL
@@ -981,10 +982,10 @@ H &lt;- Heatmap(mtx_sub, border = T, top_annotation = cluster, col = col_fun, ro
         at = c(-1.5, 0, 1.5)
     )) 
 
-png(filename =  &#39;../output/01_/Fig4B_Heatmap.png&#39;, width = 3.5, height = 15,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig4B_Heatmap.png&#39;, width = 3.5, height = 15,units = &#39;in&#39;, res = 300)
 draw(H, heatmap_legend_side = &quot;bottom&quot;)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig4B_Heatmap.png" /></p>
+<p><img src="assets/01_/Fig4B_Heatmap.png" /></p>
 </div>
 <div id="fig-4d" class="section level2">
 <h2>Fig 4D</h2>
@@ -1044,22 +1045,22 @@ cluster &lt;- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show
         at = c(-1.5, 0, 1.5)
     )) 
  
-png(filename =  &#39;../output/01_/Fig4D_Heatmap.png&#39;, width = 6, height = 10,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig4D_Heatmap.png&#39;, width = 6, height = 10,units = &#39;in&#39;, res = 300)
 draw(H, heatmap_legend_side = &quot;bottom&quot;)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig4D_Heatmap.png" /></p>
+<p><img src="assets/01_/Fig4D_Heatmap.png" /></p>
 </div>
 <div id="supp-6c" class="section level2">
 <h2>Supp 6C</h2>
-<pre class="r"><code>png(filename =  &#39;../output/01_/Supp_6C_Cd44.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+<pre class="r"><code>png(filename =  &#39;../docs/assets/01_/Supp_6C_Cd44.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
 FeaturePlot(Tc, &quot;Cd44&quot;, max.cutoff = 1.5) &amp; NoAxes() &amp; NoLegend() &amp; theme(aspect.ratio = 1)
 invisible(dev.off())
 
-png(filename =  &#39;../output/01_/Supp_6C_Sell.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Supp_6C_Sell.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
 FeaturePlot(Tc, &quot;Sell&quot;, max.cutoff = 3) &amp; NoAxes() &amp; NoLegend() &amp; theme(aspect.ratio = 1)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Supp_6C_Cd44.png" /> <img
-src="../output/01_/Supp_6C_Sell.png" /></p>
+<p><img src="assets/01_/Supp_6C_Cd44.png" /> <img
+src="assets/01_/Supp_6C_Sell.png" /></p>
 </div>
 <div id="supp-7" class="section level2 tabset tabset-pills">
 <h2 class="tabset tabset-pills">Supp 7</h2>
@@ -1105,10 +1106,10 @@ H &lt;- Heatmap(mtx_sub, border = T, top_annotation = cluster, left_annotation =
         at = c(-2, 0, 2)
     )) 
 
-png(filename =  &#39;../output/01_/Supp7B_Heatmap.png&#39;, width = 4, height = 8,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Supp7B_Heatmap.png&#39;, width = 4, height = 8,units = &#39;in&#39;, res = 300)
 draw(H, heatmap_legend_side = &quot;bottom&quot;)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Supp7B_Heatmap.png" /></p>
+<p><img src="assets/01_/Supp7B_Heatmap.png" /></p>
 </div>
 <div id="supp-7a-c-d" class="section level3">
 <h3>Supp 7A, C, D</h3>
@@ -1120,10 +1121,10 @@ Supp7_D &lt;-DimPlot(object = Tc, label = F, pt.size = 2, cols = my_color_palett
 <pre class="r"><code>## Align supplemental figures 13 A, C and D
 plot_list &lt;- list(Supp7_A, Supp7_C, Supp7_D)
 
-png(filename =  &#39;../output/01_/Sup7A_C_D.png&#39;, width = 5, height = 10,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Sup7A_C_D.png&#39;, width = 5, height = 10,units = &#39;in&#39;, res = 300)
 plot_grid(plotlist = plot_list, ncol = 1, align = &quot;v&quot;, rel_heights = c(1,1, 1))
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Sup7A_C_D.png" /></p>
+<p><img src="assets/01_/Sup7A_C_D.png" /></p>
 </div>
 </div>
 </div>
@@ -1163,21 +1164,21 @@ slot(Tc, &quot;meta.data&quot;)$cloneType &lt;- factor(slot(Tc, &quot;meta.data&
 <h2>Fig 5A</h2>
 <pre class="r"><code>## Plot representation of cloneTypes within each cluster/ 
 Idents(Tc) &lt;- &quot;CD4ID&quot;
-png(filename =  &#39;../output/01_/Fig5A.png&#39;, width = 7, height = 8,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig5A.png&#39;, width = 7, height = 8,units = &#39;in&#39;, res = 300)
 occupiedscRepertoire(Tc,proportion = T, label = F)  &amp; coord_flip() &amp; scale_fill_manual(&quot;Expansion&quot;, values = c(&quot;#FF4B20&quot;, &quot;#0348A6&quot;, &quot;light grey&quot;)) &amp; theme(text = element_text(size = 15, colour = &quot;black&quot;), axis.text = element_text(size = 25, colour = &quot;black&quot;), legend.text = element_text(size = 15, colour = &quot;black&quot;), legend.title = element_text(size = 25, colour = &quot;black&quot;), axis.line = element_line(colour = &quot;black&quot;), legend.position = &quot;top&quot;, legend.direction =  &quot;vertical&quot;, plot.margin = unit(c(1,1,1,1), &quot;cm&quot;))  &amp; xlab(&quot;&quot;)  &amp; ylab(&quot;Proportion&quot;)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig5A.png" /></p>
+<p><img src="assets/01_/Fig5A.png" /></p>
 </div>
 <div id="fig-5b" class="section level2">
 <h2>Fig 5B</h2>
 <pre class="r"><code>Idents(Tc) &lt;- &quot;cloneType&quot;
 
 ## highlight clonetypes per mouse
-png(filename =  &#39;../output/01_/Fig5B.png&#39;, width = 12, height = 3,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig5B.png&#39;, width = 12, height = 3,units = &#39;in&#39;, res = 300)
 DimPlot(Tc, group.by = &quot;cloneType&quot;, split.by = &quot;Mouse&quot;) +
     scale_color_manual(values = c(&quot;#FF4B20&quot;, &quot;#0348A6&quot;, &quot;light grey&quot;))
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig5B.png" /></p>
+<p><img src="assets/01_/Fig5B.png" /></p>
 </div>
 <div id="fig-5c" class="section level2">
 <h2>Fig 5C</h2>
@@ -1296,10 +1297,10 @@ Idents(Tc) = &quot;CD4ID&quot;
 Cyto &lt;- DimPlot(Tc, reduction = &quot;umap&quot;, cells.highlight = Which) + ggtitle(&quot;Cytotoxic&quot;) + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()</code></pre>
 <pre class="r"><code>plotlist &lt;- list(EM1, EM2, EM3, EM4, EM5, Eomes, Cyto, Single, Double, Triple)
 
-png(filename =  &#39;../output/01_/Fig5C.png&#39;, width = 12, height = 5,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig5C.png&#39;, width = 12, height = 5,units = &#39;in&#39;, res = 300)
 plot_grid(plotlist = plotlist, ncol = 5, align = &quot;v&quot;)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig5C.png" /></p>
+<p><img src="assets/01_/Fig5C.png" /></p>
 </div>
 <div id="fig-5d" class="section level2">
 <h2>Fig 5D</h2>
@@ -1307,10 +1308,10 @@ invisible(dev.off())</code></pre>
 circos.clear()
 circles &lt;- getCirclize(Tc_Exp, group.by = &quot;CD4ID&quot;)
 
-png(filename =  &#39;../output/01_/Fig5D.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
+png(filename =  &#39;../docs/assets/01_/Fig5D.png&#39;, width = 4, height = 4,units = &#39;in&#39;, res = 300)
 chordDiagram(circles, self.link = 1, grid.col = my_color_palette, directional = 2)
 invisible(dev.off())</code></pre>
-<p><img src="../output/01_/Fig5D.png" /></p>
+<p><img src="assets/01_/Fig5D.png" /></p>
 </div>
 <div id="fig-5e" class="section level2 tabset tabset-pills">
 <h2 class="tabset tabset-pills">Fig 5E</h2>
@@ -1328,6 +1329,43 @@ names(col) &lt;- NULL
 
 ggvenn::ggvenn(Venn, show_percentage = F, fill_color = col, text_size = 10, set_name_size = 12) + theme(plot.margin = unit(c(0,0,0,0), &quot;cm&quot;))</code></pre>
 <p><img src="figure/01_.Rmd/unnamed-chunk-32-1.png" width="3000" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/JonathanNoonan/Westerhof/blob/22b924c6cd9b29f0b830cee017ed593f712ec4b2/docs/figure/01_.Rmd/unnamed-chunk-32-1.png" target="_blank">22b924c</a>
+</td>
+<td>
+JonathanNoonan
+</td>
+<td>
+2023-08-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="session-info" class="section level1">

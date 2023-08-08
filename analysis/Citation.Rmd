@@ -1,0 +1,12 @@
+---
+title: "Citation"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+Westerhof LM, Noonan J, Hargrave KE, Chimbayo ET, Cheng Z, Purnell T, et al. Multifunctional cytokine production marks influenza A virus‐specific CD4 T cells with high expression of survival molecules. Eur J Immunol 2023:2350559. doi:10.1002/eji.202350559.
+
+

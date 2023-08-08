@@ -1,0 +1,725 @@
+---
+title: "Westerhof 2023 Analysis"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F, dpi = 300)
+```
+
+```{r message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(c(
+library(Seurat),
+library(dplyr),
+library(ggplot2),
+library(scRepertoire),
+library(cowplot),
+library(circlize),
+library(ComplexHeatmap),
+library(plot1cell),
+library(ArchR),
+library(ggvenn)))
+```
+
+## Load Functions
+```{r}
+source("01-Functions.R")
+```
+
+```{r}
+## Load Data and clean
+
+counts <- read.table("../data/overall data/_1_Combined_TRACE-TCR-full_DBEC_MolsPerCell.csv", skip = 7, sep = ",", header = TRUE, row.names = 1)
+
+colnames(counts) <- gsub("_.*", "", colnames(counts)) 
+
+Tc <- CreateSeuratObject(counts = t(counts))
+
+Tags <- read.table("../data/individual datasets for each sample/_1_TRACE-TCR-full_Sample_Tag_Calls.csv", skip = 7, sep = ",", header = TRUE, row.names = 1)
+
+Tc$ID <- Tags$Sample_Name
+```
+
+# Setup & QC {.tabset .tabset-pills}
+```{r}
+## Remove multiplets and undetermined cells as defined by the BD pipeline
+Idents(Tc) <- "ID"
+Tc <- subset(Tc, ident = "Multiplet", invert = T)
+Tc <- subset(Tc, ident = "Undetermined", invert = T)
+
+## Remove cells with low/high genes or low reads. 
+Tc <- subset(Tc, subset = nFeature_RNA > 50 & nFeature_RNA < 120 & nCount_RNA <1200)
+
+### Reorder Tissue IDs
+ID_Levels <- c("Spleen1", "Spleen2", "Spleen3", "Spleen4", "Lung1", "Lung2", "Lung3", "Lung4")
+Tc$ID <- factor(x = Tc@meta.data[["ID"]], levels = ID_Levels)
+Idents(Tc) <- "ID"
+
+# Generalised
+Tc$Tissue <- Tc$ID
+Idents(Tc) <- "Tissue"
+Tc <- RenameIdents(Tc,"Spleen1" = "Spleen", "Spleen2" = "Spleen", "Spleen3" = "Spleen", "Spleen4" = "Spleen", "Lung1" = "Lung", "Lung2" = "Lung", "Lung3" = "Lung", "Lung4" = "Lung")
+Tc$Tissue <- Idents(Tc)
+
+Tc$Mouse <- Tc$ID
+Idents(Tc) <- "Mouse"
+Tc <- RenameIdents(Tc, "Spleen1" = "M1", "Lung1" = "M1", "Spleen2" = "M2", "Lung2" = "M2","Spleen3" = "M3", "Lung3" = "M3","Spleen4" = "M4", "Lung4" = "M4")
+Tc$Mouse <- Idents(Tc)
+```
+## RNA Normalisation
+```{r}
+## Scale and Normalise RNA assay
+DefaultAssay(Tc) <- "RNA"
+Tc <- NormalizeData(Tc)
+all.genes <- rownames(Tc)
+Tc <- ScaleData(Tc, features = all.genes)
+```
+## SCT Normalisation and Initial Clustering (Supp 7A)
+```{r, results = 'hide', message=FALSE,  warning=FALSE}
+## Perform ScTransform
+Tc <- SCTransform(Tc, verbose = FALSE, return.only.var.genes = FALSE)
+
+## Run PCA
+Tc <- RunPCA(Tc, verbose = FALSE)
+
+## Run UMAP
+Tc <- RunUMAP(Tc, dims = 1:30, verbose = FALSE)
+
+## Find Nearest Neighbours
+Tc <- FindNeighbors(Tc, dims = 1:30, verbose = FALSE)
+
+## Find CLusters
+Tc <- FindClusters(Tc, resolution = 1.2, verbose = FALSE)
+```
+
+```{r, fig.width=8, fig.height=5}
+## Plot
+Supp7_A <- DimPlot(Tc, reduction = "umap", label = T, pt.size = 0.5) + theme( axis.line = element_line(colour = 'black', size = 2.5), axis.ticks = element_line(size = 5), axis.ticks.length = unit(0.5, "cm"), axis.text = element_text(size = 25), axis.title.x = element_blank(), axis.title.y = element_blank())  + NoLegend()
+```
+
+```{r}
+## Initial Annotation
+Idents(Tc) <- "seurat_clusters"
+CD4ID <- c("Naïve",
+"Tem 1",
+"Naïve",
+"Naïve",
+"Naïve",
+"Naïve",
+"Single +",
+"Double +",
+"Tem 2",
+"Cytotoxic",
+"Tem 3",
+"Naïve",
+"Tem 4",
+"Tem 5",
+"Triple +" ,
+"Eomes_hi",
+"Tregs",
+"Naïve",
+"Naïve")
+names(x = CD4ID) <- levels(x = Tc)
+Tc <- RenameIdents(object = Tc, CD4ID)
+Tc[["CD4ID"]] <- Idents(object = Tc)
+```
+
+```{r}
+# Reordered Annotation
+Idents(Tc) <- "CD4ID"
+simp_Levels <- c(
+"Naïve",
+"Tregs",
+"Tem 1",
+"Tem 2",
+"Tem 3",
+"Tem 4",
+"Tem 5",
+"Eomes_hi",
+"Cytotoxic",
+"Single +",
+"Double +",
+"Triple +")
+
+Tc$CD4ID <- factor(x = Tc@meta.data[["CD4ID"]], levels = simp_Levels)
+
+# Create vector of default colors
+ArchR <- ArchRPalettes[1:15]
+my_color_palette <- ArchR$bear[c(1,2,3,4,9,10,11,12,14,5,13,15)]
+names(my_color_palette) <- as.character(simp_Levels)
+
+# Assign Mouse and Tissue cols
+mouse_cols <- brewer.pal(n = length(names(table(Tc$Mouse))), name = "Blues")
+names(mouse_cols) <- names(table(Tc$Mouse))
+
+Tissue_cols <- c("#FF2600", "#424242")
+names(Tissue_cols) <- c("Spleen", "Lung")
+
+```
+
+# Fig 4 {.tabset .tabset-pills}
+## Figure 4A
+```{r}
+Idents(Tc) <- "CD4ID"
+
+circ_data <- prepare_circlize_data(Tc, scale = 0.65)
+set.seed(1234)
+
+## Levels
+circ_data$Cluster <- factor(circ_data$Cluster, levels = levels(Tc))
+Clusters <- my_color_palette[levels(Tc)]
+```
+
+```{r}
+## plot and save figure
+
+dir.create("../output/01_")
+
+png(filename =  '../output/01_/Fig4A_UMAP.png', width = 10, height = 10,units = 'in', res = 300)
+circos.clear()
+circos.par(circle.margin = 0.1)
+plot_circlize2(circ_data, do.label = F, pt.size = 1, col.use = Clusters, bg.color = 'white', kde2d.n = 10, repel = T, label.cex = 50, contour.levels = 0) 
+add_track2(circ_data, group = "Tissue", colors = Tissue_cols , track_num = 2)
+add_track2(circ_data, group = "Mouse", colors = mouse_cols, track_num = 3) 
+invisible(dev.off())
+```
+![](../output/01_/Fig4A_UMAP.png)
+
+## Legends
+```{r, fig.height=6}
+dir.create('../output/01_/Legends')
+
+png(filename =  '../output/01_/Legends/Cluster_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topleft", legend = names(my_color_palette), pch=16, pt.cex=3, cex=1.5, bty='n',
+    col = my_color_palette)
+mtext("Cluster", at=0.2, cex=2)
+invisible(dev.off())
+```
+![](../output/01_/Legends/Cluster_Legend.png)
+
+```{r, fig.height=6}
+png(filename =  '../output/01_/Legends/Mouse_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topleft", legend = names(mouse_cols), pch=16, pt.cex=3, cex=1.5, bty='n',
+    col = mouse_cols)
+mtext("Mouse", at=0.2, cex=2)
+invisible(dev.off())
+```
+![](../output/01_/Legends/Mouse_Legend.png)
+
+```{r, fig.height=6}
+png(filename =  '../output/01_/Legends/Tissue_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topleft", legend = names(Tissue_cols), pch=16, pt.cex=3, cex=1.5, bty='n',
+    col = Tissue_cols)
+mtext("Tissue", at=0.2, cex=2)
+invisible(dev.off())
+```
+![](../output/01_/Legends/Tissue_Legend.png)
+
+## Fig 4B Cytokine+ Heatmap
+```{r}
+## Conduct differential expression testing
+DefaultAssay(Tc) <- "RNA"
+celltypeDEG <- FindAllMarkers(Tc, test.use = "MAST", assay = "RNA", logfc.threshold = 0.25, min.pct = 0.4, only.pos = T)
+
+## remove non-significant DEGs
+celltypeDEG <- subset(celltypeDEG, p_val_adj <0.05)
+
+## save as table
+write.csv(celltypeDEG, file = "../output/01_/celltypeDEG.csv")
+
+## remove genes as rownames
+rownames(celltypeDEG) <- NULL
+
+## remove duplicates for heatmap visualisation
+no.dup <- celltypeDEG %>% group_by(gene) %>%
+        top_n(1, abs(avg_log2FC))
+```
+```{r}
+## Create averaged expression per mouse object 
+Idents(Tc) <- "CD4ID"
+Cyto_pos_avg <- AverageExpression(Tc, assays = "RNA", slot = "scale.data", return.seurat = T, add.ident = "Mouse")
+
+Idents(Cyto_pos_avg) <- "orig.ident"
+
+## subset to include cells only from cytokine producing clusters
+Cyto_pos_avg <- subset(Cyto_pos_avg, idents = c("Single +", "Double +",
+"Triple +" ))
+
+## subset cluster DEGs to include cells only from cytokine producing clusters
+Cyto_pos_markers <- celltypeDEG[289:436, ]
+
+
+## Identify unique and common markers from each group.
+x <- split(Cyto_pos_markers, Cyto_pos_markers$cluster)
+
+
+intersect_all <- function(a,b,...){
+  Reduce(dplyr::intersect, list(a,b,...))
+}
+
+
+a <- x$`Single +`$gene
+b <- x$`Double +`$gene
+c <- x$`Triple +`$gene
+
+all <- intersect_all(a,b,c)
+all <- subset(Cyto_pos_markers, gene %in% all)
+all <- all[!duplicated(all$gene), ]
+all$cluster <- "Common"
+rownames(all) <- NULL
+
+Single_unique <-  setdiff(a, c(b,c))
+Single_unique <- subset(Cyto_pos_markers, gene %in% Single_unique)
+Single_unique$cluster <- "Single"
+rownames(Single_unique) <- NULL
+
+Double_unique <-  setdiff(b, c(a,c))
+Double_unique <- subset(Cyto_pos_markers, gene %in% Double_unique)
+Double_unique$cluster <- "Double"
+rownames(Double_unique) <- NULL
+
+Triple_unique <-  setdiff(c, c(a,b))
+Triple_unique <- subset(Cyto_pos_markers, gene %in% Triple_unique)
+Triple_unique$cluster <- "Triple"
+rownames(Triple_unique) <- NULL
+
+Double_Triple <- intersect(b,c)
+Double_Triple <- setdiff(Double_Triple, a)
+Double_Triple <- subset(Cyto_pos_markers, gene %in% Double_Triple)
+Double_Triple <- Double_Triple[!duplicated(Double_Triple$gene),]
+Double_Triple$cluster <- "Double_Triple"
+rownames(Triple_unique) <- NULL
+
+heatmap_genes <- rbind(Single_unique, Double_unique, Triple_unique, Double_Triple, all)
+
+## ensure correct levels
+levels(as.factor(heatmap_genes$cluster))
+levels <- c("Single", "Double", "Triple", "Double_Triple", "Common")
+heatmap_genes$cluster <- factor(x = heatmap_genes$cluster, levels = levels)
+levels(as.factor(heatmap_genes$cluster))
+
+## Create heatmap
+mtx <- Cyto_pos_avg@assays$RNA@scale.data
+mtx <- as.data.frame(mtx)
+
+mtx_sub <-subset(mtx, rownames(mtx) %in% heatmap_genes$gene)
+mtx_sub <- mtx_sub %>% arrange(factor(rownames(mtx_sub), levels = heatmap_genes$gene))
+mtx_sub <- mtx_sub[, 12:1]
+
+meta <- Cyto_pos_avg@meta.data
+meta$cluster <- meta$orig.ident
+meta$mouse <- gsub(".*_", "", rownames(Cyto_pos_avg@meta.data))
+meta$cluster <- factor(x = meta$cluster, levels = rev(simp_Levels)) 
+meta <- meta[12:1,]
+
+col_fun<-colorRamp2(c(-1.5,-0, 1.5), c("#2166ac", "#EEEEEE", "#b2182b"))
+
+cluster <- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c(
+"Single +" =  "#d33502", 
+"Double +" =  "#0d74b6",
+"Triple +" =  "#725ca5"), mouse = c(M1= "#EFF3FF", M2= "#BDD7E7", M3= "#6BAED6", M4 = "#2171B5")))
+
+H <- Heatmap(mtx_sub, border = T, top_annotation = cluster, col = col_fun, row_split = heatmap_genes$cluster, column_split = meta$cluster,  cluster_rows = F, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = " ", row_title_rot = 270, row_names_side = "left", row_names_rot = -30, heatmap_legend_param = list(legend_direction = "horizontal", legend_width = unit(3, "cm"),  labels_gp = gpar(fontsize = 15), labels_rot = -90,
+        title = "", 
+        title_gp = gpar(box_fill = "grey"),
+        at = c(-1.5, 0, 1.5)
+    )) 
+
+png(filename =  '../output/01_/Fig4B_Heatmap.png', width = 3.5, height = 15,units = 'in', res = 300)
+draw(H, heatmap_legend_side = "bottom")
+invisible(dev.off())
+```
+![](../output/01_/Fig4B_Heatmap.png)
+
+
+## Fig 4D
+```{r}
+## Create per mouse averaged expression object (this is redundant as was also conducted above)
+Idents(Tc) <- "CD4ID"
+Tc.Avg <- AverageExpression(Tc, assays = "RNA", slot = "scale.data", return.seurat = T, add.ident = "Mouse")
+
+survival <- c("Bcl2a1a",
+"Bcl2l1",
+"Myc",
+"Il15ra",
+"Il2ra",
+"Tnfrsf4",
+"Tnfsf8",
+"Tnfrsf1b",
+"Slamf1",                         
+"Slc7a5",                           
+"Stat5a",                          
+"Stat6",                            
+"Tbx21",
+"Tfrc",
+"Foxo1",
+"Casp1",
+"Casp8",
+"Cblb",
+"Gata3",
+"Stat1")
+```
+
+```{r, fig.height=10, fig.width=10, dpi=300}
+## Create heatmap of survival genes
+mtx <- Tc.Avg@assays$RNA@scale.data
+mtx <- as.data.frame(mtx)
+
+mtx_sub <-subset(mtx, rownames(mtx) %in% survival)
+mtx_sub <- mtx_sub %>% arrange(factor(rownames(mtx_sub), levels = survival))
+
+meta <- Tc.Avg@meta.data
+meta$cluster <- meta$orig.ident
+meta$cluster <- gsub("Eomes", "Eomes_hi", meta$cluster)
+meta$mouse <- gsub(".*_", "", rownames(Tc.Avg@meta.data))
+meta$cluster <- factor(x = meta$cluster, levels = simp_Levels)
+
+cluster <- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c("Naïve" = "#faa818",
+"Tregs" =  "#41a30d", 
+"Tem 1" =  "#fbdf72",
+"Tem 2" =  "#367d7d", 
+"Tem 3" =  "#f5b390",
+"Tem 4" =  "#342739", 
+"Tem 5" =  "#bed678",
+"Eomes_hi" =  "#a6d9ee", 
+"Cytotoxic" =  "#60824f",
+"Single +" =  "#d33502", 
+"Double +" =  "#0d74b6",
+"Triple +" =  "#725ca5"), mouse = c(M1= "#EFF3FF", M2= "#BDD7E7", M3= "#6BAED6", M4 = "#2171B5")))
+
+ H <- Heatmap(mtx_sub, border = T, width = ncol(mtx_sub)*unit(2.5, "mm"), height = nrow(mtx_sub)*unit(6, "mm"), top_annotation = cluster, col = col_fun,   cluster_rows = F, column_split = meta$cluster, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = " ", column_title = " ", row_title_rot = 270, row_names_side = "left", row_names_rot = 0, heatmap_legend_param = list(legend_direction = "horizontal", legend_width = unit(3, "cm"),  labels_gp = gpar(fontsize = 15), labels_rot = -90,
+        title = "", 
+        title_gp = gpar(box_fill = "grey"),
+        at = c(-1.5, 0, 1.5)
+    )) 
+ 
+png(filename =  '../output/01_/Fig4D_Heatmap.png', width = 6, height = 10,units = 'in', res = 300)
+draw(H, heatmap_legend_side = "bottom")
+invisible(dev.off())
+```
+![](../output/01_/Fig4D_Heatmap.png)
+
+
+## Supp 6C
+```{r}
+png(filename =  '../output/01_/Supp_6C_Cd44.png', width = 4, height = 4,units = 'in', res = 300)
+FeaturePlot(Tc, "Cd44", max.cutoff = 1.5) & NoAxes() & NoLegend() & theme(aspect.ratio = 1)
+invisible(dev.off())
+
+png(filename =  '../output/01_/Supp_6C_Sell.png', width = 4, height = 4,units = 'in', res = 300)
+FeaturePlot(Tc, "Sell", max.cutoff = 3) & NoAxes() & NoLegend() & theme(aspect.ratio = 1)
+invisible(dev.off())
+```
+
+![](../output/01_/Supp_6C_Cd44.png)
+![](../output/01_/Supp_6C_Sell.png)
+
+
+## Supp 7  {.tabset .tabset-pills}
+### Supp 7B
+```{r}
+Idents(Tc) <- "CD4ID"
+## create averaged expression object for visualisation
+Tc.Avg <- AverageExpression(Tc, assays = "RNA", return.seurat = T)
+```
+
+```{r, fig.height=10, fig.width=5, dpi=300}
+## create heatmap
+mtx <- Tc.Avg@assays$RNA@scale.data
+mtx <- as.data.frame(mtx)
+
+mtx_sub <-subset(mtx, rownames(mtx) %in% no.dup$gene)
+mtx_sub <- mtx_sub %>% arrange(factor(rownames(mtx_sub), levels = no.dup$gene))
+
+meta <- Tc.Avg@meta.data
+meta$cluster <- rownames(meta)
+
+col_fun<-colorRamp2(c(-2,-0, 2), c("#2166ac", "#EEEEEE", "#b2182b"))
+
+cluster <- HeatmapAnnotation(cluster = meta$cluster, show_annotation_name = F, annotation_label = F, annotation_name_rot = 5, show_legend = F, annotation_legend_param = list(labels_gp = gpar(fontsize = 0)), col = list(cluster = c(
+"Naïve" = "#faa818",
+"Tregs" =  "#41a30d", 
+"Tem 1" =  "#fbdf72",
+"Tem 2" =  "#367d7d", 
+"Tem 3" =  "#f5b390",
+"Tem 4" =  "#342739", 
+"Tem 5" =  "#bed678",
+"Eomes_hi" =  "#a6d9ee", 
+"Cytotoxic" =  "#60824f",
+"Single +" =  "#d33502", 
+"Double +" =  "#0d74b6",
+"Triple +" =  "#725ca5")))
+
+labels = rowAnnotation(x = anno_mark(at = c(1,4,8,14,35,37,39,44,46,50,54,59,63,64,66,68,72,73,74,76,77,85,89,90,92,97,98,102,103,118,119,123,125,135),
+labels_rot = -30, labels_gp = gpar(fontsize=10), padding = unit(2, "mm"), 
+labels = no.dup$gene[c(1,4,8,14,35,37,39,44,46,50,54,59,63,64,66,68,72,73,74,76,77,85,89,90,92,97,98,102,103,118,119,123,125,135)],
+side = "left"))
+
+H <- Heatmap(mtx_sub, border = T, top_annotation = cluster, left_annotation = labels, row_names_gp = gpar(fontsize=0), col = col_fun, row_split = no.dup$cluster,  cluster_rows = F, cluster_columns = F, show_row_dend = F, cluster_row_slices = F, show_column_names = F, cluster_column_slices = F, column_names_side = NULL, row_title = " ", heatmap_legend_param = list(legend_direction = "horizontal", legend_width = unit(3, "cm"),  labels_gp = gpar(fontsize = 15), labels_rot = 0,
+        title = "", 
+        title_gp = gpar(box_fill = "grey"),
+        at = c(-2, 0, 2)
+    )) 
+
+png(filename =  '../output/01_/Supp7B_Heatmap.png', width = 4, height = 8,units = 'in', res = 300)
+draw(H, heatmap_legend_side = "bottom")
+invisible(dev.off())
+```
+![](../output/01_/Supp7B_Heatmap.png)
+
+### Supp 7A, C, D
+```{r, fig.height = 4, fig.width=6, dpi=300}
+## create violin plot of cytokine expression
+Supp7_C <- VlnPlot(Tc, assay = "RNA", features = c("Tnf", "Ifng", "Il2"), stack = T, flip = T) + theme(plot.margin = unit(c(1,1,1,2), "cm"), axis.title.x = NULL) + xlab("") + NoLegend()
+```
+
+```{r, fig.width=8, fig.height=5}
+## create UMAP split by tissue
+
+Supp7_D <-DimPlot(object = Tc, label = F, pt.size = 2, cols = my_color_palette, split.by = "Tissue") + theme(strip.text.x = element_text(size = 40, face = "bold"), axis.line = element_line(colour = 'black', size = 2.5), axis.ticks = element_line(size = 5), axis.ticks.length = unit(0.5, "cm"), axis.text = element_text(size = 25), axis.title.x = element_blank(), axis.title.y = element_blank())  + NoLegend()
+```
+
+```{r, fig.height=12, fig.width=6}
+## Align supplemental figures 13 A, C and D
+plot_list <- list(Supp7_A, Supp7_C, Supp7_D)
+
+png(filename =  '../output/01_/Sup7A_C_D.png', width = 5, height = 10,units = 'in', res = 300)
+plot_grid(plotlist = plot_list, ncol = 1, align = "v", rel_heights = c(1,1, 1))
+invisible(dev.off())
+
+```
+![](../output/01_/Sup7A_C_D.png)
+
+# Fig 5 {.tabset .tabset-pills}
+```{r}
+## Load & Save Data from BD
+TCR <- load.BD(dir = "../data/TCR data/", file.name = "_1_TRACE-TCR-full_VDJ_perCell.csv")
+
+
+## Create list with only paired chains
+TCR <- combineTCR(TCR, samples = c(""),
+                   ID = c(""), cells = "T-AB", removeNA = T)
+
+## remove _ from barcodes to allow for combining.
+ReplaceBarcodes <- gsub("__*", "", TCR[["_"]][["barcode"]])
+TCR[["_"]][["barcode"]] <- ReplaceBarcodes
+
+## Combine with Seurat Objects
+Tc <- combineExpression(TCR, Tc, cloneCall="gene")
+
+## Recalculate Clonetype based on Mouse
+Tc <- recalculateFrequency(Tc, cloneCall = "aa", groupBy = "Mouse")
+
+Tc$Frequency <- Tc$recalFrequency.Mouse
+Tc$recalFrequency.Mouse <- NULL
+
+## Remove cells with no paired TCR data
+Tc <- subset(Tc, Frequency > 0)
+
+## Assign levels
+slot(Tc, "meta.data")$cloneType <- factor(slot(Tc, "meta.data")$cloneType, 
+                levels = c("Hyperexpanded (0.1 < X <= 1)", 
+                  "Large (0.01 < X <= 0.1)", 
+                            "Medium (0.001 < X <= 0.01)",
+                             "Single Clone", NA))
+
+```
+
+
+## Fig 5A
+```{r, fig.width=8, fig.height=8}
+## Plot representation of cloneTypes within each cluster/ 
+Idents(Tc) <- "CD4ID"
+png(filename =  '../output/01_/Fig5A.png', width = 7, height = 8,units = 'in', res = 300)
+occupiedscRepertoire(Tc,proportion = T, label = F)  & coord_flip() & scale_fill_manual("Expansion", values = c("#FF4B20", "#0348A6", "light grey")) & theme(text = element_text(size = 15, colour = "black"), axis.text = element_text(size = 25, colour = "black"), legend.text = element_text(size = 15, colour = "black"), legend.title = element_text(size = 25, colour = "black"), axis.line = element_line(colour = "black"), legend.position = "top", legend.direction =  "vertical", plot.margin = unit(c(1,1,1,1), "cm"))  & xlab("")  & ylab("Proportion")
+invisible(dev.off())
+```
+![](../output/01_/Fig5A.png)
+
+## Fig 5B
+```{r fig.height=3, fig.width=10, message=FALSE}
+
+Idents(Tc) <- "cloneType"
+
+## highlight clonetypes per mouse
+png(filename =  '../output/01_/Fig5B.png', width = 12, height = 3,units = 'in', res = 300)
+DimPlot(Tc, group.by = "cloneType", split.by = "Mouse") +
+    scale_color_manual(values = c("#FF4B20", "#0348A6", "light grey"))
+invisible(dev.off())
+```
+![](../output/01_/Fig5B.png)
+
+## Fig 5C
+```{r}
+## Highlight clones present within each cluster on the UMAP. Note that the clones selected are not defined as unique to each cluster, just that they were found within the 'query' cluster. 
+
+## Isolate cells from expanded cloneTypes.
+Tc_Exp <- subset(Tc, idents = "Single Clone", invert =T)
+
+## Triple +
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Triple +")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = "CD4ID"
+Triple <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Triple") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+## Double +
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Double +")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = "CD4ID"
+Double <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Double") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+## Single +
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Single +")
+Probe_Clones <- Probe$CTaa
+
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = "CD4ID"
+Single <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Single") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 1
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Tem 1")
+Probe_Clones <- Probe$CTaa
+
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = "CD4ID"
+EM1 <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("TEM 1") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 2
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Tem 2")
+Probe_Clones <- Probe$CTaa
+
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+Idents(Tc) = "CD4ID"
+EM2 <- DimPlot(Tc, reduction = "umap", cells.highlight = Which)  + ggtitle("TEM 2") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 3
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Tem 3")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+
+Idents(Tc) = "CD4ID"
+EM3 <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("TEM 3") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+
+## EM 4
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Tem 4")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = "CD4ID"
+EM4 <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("TEM 4") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## EM 5
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Tem 5")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+
+Idents(Tc) = "CD4ID"
+EM5 <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("TEM 5") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## Eomes_hi
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Eomes_hi")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = "CD4ID"
+Eomes <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Eomes") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+
+
+## Cytotoxic
+Idents(Tc_Exp) = "CD4ID"
+Probe <- subset(Tc_Exp, idents = "Cytotoxic")
+Probe_Clones <- Probe$CTaa
+Idents(Tc) <- "CTaa"
+Which <- WhichCells(Tc, idents = Probe_Clones)
+
+Idents(Tc) = "CD4ID"
+Cyto <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Cytotoxic") + theme(aspect.ratio = 1, plot.title = element_text(hjust = 0.5, size = 25)) + NoLegend()
+```
+
+```{r}
+plotlist <- list(EM1, EM2, EM3, EM4, EM5, Eomes, Cyto, Single, Double, Triple)
+
+png(filename =  '../output/01_/Fig5C.png', width = 12, height = 5,units = 'in', res = 300)
+plot_grid(plotlist = plotlist, ncol = 5, align = "v")
+invisible(dev.off())
+```
+![](../output/01_/Fig5C.png)
+
+
+## Fig 5D
+```{r, fig.width=4.5, fig.height=4.5}
+## Create chord diagram to visualise the overlap in clones between clusters.
+circos.clear()
+circles <- getCirclize(Tc_Exp, group.by = "CD4ID")
+
+png(filename =  '../output/01_/Fig5D.png', width = 4, height = 4,units = 'in', res = 300)
+chordDiagram(circles, self.link = 1, grid.col = my_color_palette, directional = 2)
+invisible(dev.off())
+```
+![](../output/01_/Fig5D.png)
+
+
+## Fig 5E {.tabset .tabset-pills}
+```{r, fig.width=10, fig.height=10}
+## Isolate expanded CDR3 Seqs from expanded for each mouse and probe for overlap (public) verses private cloneTypes
+Idents(Tc_Exp) <- "Mouse"
+A_TCR <- unique(subset(Tc_Exp, idents = "M1")$CTaa)
+B_TCR <- unique(subset(Tc_Exp, idents = "M2")$CTaa)
+C_TCR <- unique(subset(Tc_Exp, idents = "M3")$CTaa)
+D_TCR <- unique(subset(Tc_Exp, idents = "M4")$CTaa)
+
+Venn <- list('M1' = A_TCR, "M2" = B_TCR, "M3" = C_TCR, "M4" = D_TCR)
+
+col <- mouse_cols
+names(col) <- NULL
+
+ggvenn::ggvenn(Venn, show_percentage = F, fill_color = col, text_size = 10, set_name_size = 12) + theme(plot.margin = unit(c(0,0,0,0), "cm"))
+```
+
+# Session info
+```{r}
+sessionInfo()
+```
+
+```{r message=FALSE, include=FALSE, results="hide"}
+# Save 
+saveRDS(Tc, file = "../output/01_/Tc.rds", ascii = FALSE, version = NULL, compress = TRUE)
+```

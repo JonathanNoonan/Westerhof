@@ -33,7 +33,6 @@ source("01-Functions.R")
 
 ```{r}
 ## Load Data and clean
-
 counts <- read.table("../data/overall data/_1_Combined_TRACE-TCR-full_DBEC_MolsPerCell.csv", skip = 7, sep = ",", header = TRUE, row.names = 1)
 
 colnames(counts) <- gsub("_.*", "", colnames(counts)) 
@@ -71,6 +70,7 @@ Idents(Tc) <- "Mouse"
 Tc <- RenameIdents(Tc, "Spleen1" = "M1", "Lung1" = "M1", "Spleen2" = "M2", "Lung2" = "M2","Spleen3" = "M3", "Lung3" = "M3","Spleen4" = "M4", "Lung4" = "M4")
 Tc$Mouse <- Idents(Tc)
 ```
+
 ## RNA Normalisation
 ```{r}
 ## Scale and Normalise RNA assay
@@ -178,9 +178,9 @@ Clusters <- my_color_palette[levels(Tc)]
 ```{r}
 ## plot and save figure
 
-dir.create("../output/01_")
+dir.create("../docs/assets/01_")
 
-png(filename =  '../output/01_/Fig4A_UMAP.png', width = 10, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig4A_UMAP.png', width = 10, height = 10,units = 'in', res = 300)
 circos.clear()
 circos.par(circle.margin = 0.1)
 plot_circlize2(circ_data, do.label = F, pt.size = 1, col.use = Clusters, bg.color = 'white', kde2d.n = 10, repel = T, label.cex = 50, contour.levels = 0) 
@@ -188,40 +188,40 @@ add_track2(circ_data, group = "Tissue", colors = Tissue_cols , track_num = 2)
 add_track2(circ_data, group = "Mouse", colors = mouse_cols, track_num = 3) 
 invisible(dev.off())
 ```
-![](../output/01_/Fig4A_UMAP.png)
+![](assets/01_/Fig4A_UMAP.png)
 
 ## Legends
 ```{r, fig.height=6}
-dir.create('../output/01_/Legends')
+dir.create('../docs/assets/01_/Legends')
 
-png(filename =  '../output/01_/Legends/Cluster_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Legends/Cluster_Legend.png', width = 10, height = 10,units = 'in', res = 300)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("topleft", legend = names(my_color_palette), pch=16, pt.cex=3, cex=1.5, bty='n',
     col = my_color_palette)
 mtext("Cluster", at=0.2, cex=2)
 invisible(dev.off())
 ```
-![](../output/01_/Legends/Cluster_Legend.png)
+![](assets/01_/Legends/Cluster_Legend.png)
 
 ```{r, fig.height=6}
-png(filename =  '../output/01_/Legends/Mouse_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Legends/Mouse_Legend.png', width = 10, height = 10,units = 'in', res = 300)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("topleft", legend = names(mouse_cols), pch=16, pt.cex=3, cex=1.5, bty='n',
     col = mouse_cols)
 mtext("Mouse", at=0.2, cex=2)
 invisible(dev.off())
 ```
-![](../output/01_/Legends/Mouse_Legend.png)
+![](assets/01_/Legends/Mouse_Legend.png)
 
 ```{r, fig.height=6}
-png(filename =  '../output/01_/Legends/Tissue_Legend.png', width = 10, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Legends/Tissue_Legend.png', width = 10, height = 10,units = 'in', res = 300)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("topleft", legend = names(Tissue_cols), pch=16, pt.cex=3, cex=1.5, bty='n',
     col = Tissue_cols)
 mtext("Tissue", at=0.2, cex=2)
 invisible(dev.off())
 ```
-![](../output/01_/Legends/Tissue_Legend.png)
+![](assets/01_/Legends/Tissue_Legend.png)
 
 ## Fig 4B Cytokine+ Heatmap
 ```{r}
@@ -233,7 +233,7 @@ celltypeDEG <- FindAllMarkers(Tc, test.use = "MAST", assay = "RNA", logfc.thresh
 celltypeDEG <- subset(celltypeDEG, p_val_adj <0.05)
 
 ## save as table
-write.csv(celltypeDEG, file = "../output/01_/celltypeDEG.csv")
+write.csv(celltypeDEG, file = "../docs/assets/01_/celltypeDEG.csv")
 
 ## remove genes as rownames
 rownames(celltypeDEG) <- NULL
@@ -333,11 +333,11 @@ H <- Heatmap(mtx_sub, border = T, top_annotation = cluster, col = col_fun, row_s
         at = c(-1.5, 0, 1.5)
     )) 
 
-png(filename =  '../output/01_/Fig4B_Heatmap.png', width = 3.5, height = 15,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig4B_Heatmap.png', width = 3.5, height = 15,units = 'in', res = 300)
 draw(H, heatmap_legend_side = "bottom")
 invisible(dev.off())
 ```
-![](../output/01_/Fig4B_Heatmap.png)
+![](assets/01_/Fig4B_Heatmap.png)
 
 
 ## Fig 4D
@@ -401,26 +401,26 @@ cluster <- HeatmapAnnotation(cluster = meta$cluster, mouse = meta$mouse, show_an
         at = c(-1.5, 0, 1.5)
     )) 
  
-png(filename =  '../output/01_/Fig4D_Heatmap.png', width = 6, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig4D_Heatmap.png', width = 6, height = 10,units = 'in', res = 300)
 draw(H, heatmap_legend_side = "bottom")
 invisible(dev.off())
 ```
-![](../output/01_/Fig4D_Heatmap.png)
+![](assets/01_/Fig4D_Heatmap.png)
 
 
 ## Supp 6C
 ```{r}
-png(filename =  '../output/01_/Supp_6C_Cd44.png', width = 4, height = 4,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Supp_6C_Cd44.png', width = 4, height = 4,units = 'in', res = 300)
 FeaturePlot(Tc, "Cd44", max.cutoff = 1.5) & NoAxes() & NoLegend() & theme(aspect.ratio = 1)
 invisible(dev.off())
 
-png(filename =  '../output/01_/Supp_6C_Sell.png', width = 4, height = 4,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Supp_6C_Sell.png', width = 4, height = 4,units = 'in', res = 300)
 FeaturePlot(Tc, "Sell", max.cutoff = 3) & NoAxes() & NoLegend() & theme(aspect.ratio = 1)
 invisible(dev.off())
 ```
 
-![](../output/01_/Supp_6C_Cd44.png)
-![](../output/01_/Supp_6C_Sell.png)
+![](assets/01_/Supp_6C_Cd44.png)
+![](assets/01_/Supp_6C_Sell.png)
 
 
 ## Supp 7  {.tabset .tabset-pills}
@@ -469,11 +469,11 @@ H <- Heatmap(mtx_sub, border = T, top_annotation = cluster, left_annotation = la
         at = c(-2, 0, 2)
     )) 
 
-png(filename =  '../output/01_/Supp7B_Heatmap.png', width = 4, height = 8,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Supp7B_Heatmap.png', width = 4, height = 8,units = 'in', res = 300)
 draw(H, heatmap_legend_side = "bottom")
 invisible(dev.off())
 ```
-![](../output/01_/Supp7B_Heatmap.png)
+![](assets/01_/Supp7B_Heatmap.png)
 
 ### Supp 7A, C, D
 ```{r, fig.height = 4, fig.width=6, dpi=300}
@@ -491,12 +491,12 @@ Supp7_D <-DimPlot(object = Tc, label = F, pt.size = 2, cols = my_color_palette, 
 ## Align supplemental figures 13 A, C and D
 plot_list <- list(Supp7_A, Supp7_C, Supp7_D)
 
-png(filename =  '../output/01_/Sup7A_C_D.png', width = 5, height = 10,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Sup7A_C_D.png', width = 5, height = 10,units = 'in', res = 300)
 plot_grid(plotlist = plot_list, ncol = 1, align = "v", rel_heights = c(1,1, 1))
 invisible(dev.off())
 
 ```
-![](../output/01_/Sup7A_C_D.png)
+![](assets/01_/Sup7A_C_D.png)
 
 # Fig 5 {.tabset .tabset-pills}
 ```{r}
@@ -538,11 +538,11 @@ slot(Tc, "meta.data")$cloneType <- factor(slot(Tc, "meta.data")$cloneType,
 ```{r, fig.width=8, fig.height=8}
 ## Plot representation of cloneTypes within each cluster/ 
 Idents(Tc) <- "CD4ID"
-png(filename =  '../output/01_/Fig5A.png', width = 7, height = 8,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig5A.png', width = 7, height = 8,units = 'in', res = 300)
 occupiedscRepertoire(Tc,proportion = T, label = F)  & coord_flip() & scale_fill_manual("Expansion", values = c("#FF4B20", "#0348A6", "light grey")) & theme(text = element_text(size = 15, colour = "black"), axis.text = element_text(size = 25, colour = "black"), legend.text = element_text(size = 15, colour = "black"), legend.title = element_text(size = 25, colour = "black"), axis.line = element_line(colour = "black"), legend.position = "top", legend.direction =  "vertical", plot.margin = unit(c(1,1,1,1), "cm"))  & xlab("")  & ylab("Proportion")
 invisible(dev.off())
 ```
-![](../output/01_/Fig5A.png)
+![](assets/01_/Fig5A.png)
 
 ## Fig 5B
 ```{r fig.height=3, fig.width=10, message=FALSE}
@@ -550,12 +550,12 @@ invisible(dev.off())
 Idents(Tc) <- "cloneType"
 
 ## highlight clonetypes per mouse
-png(filename =  '../output/01_/Fig5B.png', width = 12, height = 3,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig5B.png', width = 12, height = 3,units = 'in', res = 300)
 DimPlot(Tc, group.by = "cloneType", split.by = "Mouse") +
     scale_color_manual(values = c("#FF4B20", "#0348A6", "light grey"))
 invisible(dev.off())
 ```
-![](../output/01_/Fig5B.png)
+![](assets/01_/Fig5B.png)
 
 ## Fig 5C
 ```{r}
@@ -677,11 +677,11 @@ Cyto <- DimPlot(Tc, reduction = "umap", cells.highlight = Which) + ggtitle("Cyto
 ```{r}
 plotlist <- list(EM1, EM2, EM3, EM4, EM5, Eomes, Cyto, Single, Double, Triple)
 
-png(filename =  '../output/01_/Fig5C.png', width = 12, height = 5,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig5C.png', width = 12, height = 5,units = 'in', res = 300)
 plot_grid(plotlist = plotlist, ncol = 5, align = "v")
 invisible(dev.off())
 ```
-![](../output/01_/Fig5C.png)
+![](assets/01_/Fig5C.png)
 
 
 ## Fig 5D
@@ -690,11 +690,11 @@ invisible(dev.off())
 circos.clear()
 circles <- getCirclize(Tc_Exp, group.by = "CD4ID")
 
-png(filename =  '../output/01_/Fig5D.png', width = 4, height = 4,units = 'in', res = 300)
+png(filename =  '../docs/assets/01_/Fig5D.png', width = 4, height = 4,units = 'in', res = 300)
 chordDiagram(circles, self.link = 1, grid.col = my_color_palette, directional = 2)
 invisible(dev.off())
 ```
-![](../output/01_/Fig5D.png)
+![](assets/01_/Fig5D.png)
 
 
 ## Fig 5E {.tabset .tabset-pills}
@@ -721,5 +721,5 @@ sessionInfo()
 
 ```{r message=FALSE, include=FALSE, results="hide"}
 # Save 
-saveRDS(Tc, file = "../output/01_/Tc.rds", ascii = FALSE, version = NULL, compress = TRUE)
+saveRDS(Tc, file = "../docs/assets/01_/Tc.rds", ascii = FALSE, version = NULL, compress = TRUE)
 ```
